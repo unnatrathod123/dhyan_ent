@@ -1,0 +1,628 @@
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  Product,
+  CartItem,
+  POSCartItem,
+  POSBill,
+  KhataTransaction,
+  KhataCustomer,
+  CashierShift,
+  Order,
+  WarrantyClaim,
+  AppRole,
+  AppTab,
+  ViewportMode
+} from '../types';
+import {
+  INITIAL_PRODUCTS,
+  INITIAL_KHATA_LEDGER,
+  INITIAL_KHATA_CUSTOMER,
+  INITIAL_CASHIER_SHIFT,
+  INITIAL_ORDERS,
+  INITIAL_WARRANTY_CLAIMS
+} from '../data/mockData';
+
+export interface ToastItem {
+  id: string;
+  message: string;
+  type?: 'normal' | 'success' | 'warning' | 'error';
+}
+
+interface StoreContextType {
+  // State
+  products: Product[];
+  cart: CartItem[];
+  posCart: POSCartItem[];
+  khataCustomer: KhataCustomer;
+  ledger: KhataTransaction[];
+  cashierShift: CashierShift;
+  orders: Order[];
+  warrantyClaims: WarrantyClaim[];
+  currentRole: AppRole;
+  currentTab: AppTab;
+  viewportMode: ViewportMode;
+  offlineMode: boolean;
+  offlineQueue: any[];
+  selectedCategory: string;
+  searchQuery: string;
+  selectedProduct: Product | null;
+  isCartOpen: boolean;
+  isProductDetailOpen: boolean;
+  isThermalReceiptOpen: boolean;
+  isShiftModalOpen: boolean;
+  isRecordPaymentOpen: boolean;
+  isGiveCreditOpen: boolean;
+  isAddNewProductOpen: boolean;
+  isCreateAccountOpen: boolean;
+  lastGeneratedBill: POSBill | null;
+  toasts: ToastItem[];
+
+  // Setters & Actions
+  setRole: (role: AppRole) => void;
+  setTab: (tab: AppTab) => void;
+  setViewport: (mode: ViewportMode) => void;
+  setCategory: (category: string) => void;
+  setSearchQuery: (query: string) => void;
+  setSelectedProduct: (product: Product | null) => void;
+  setIsCartOpen: (open: boolean) => void;
+  setIsProductDetailOpen: (open: boolean) => void;
+  setIsCreateAccountOpen: (open: boolean) => void;
+  setIsThermalReceiptOpen: (open: boolean) => void;
+  setIsShiftModalOpen: (open: boolean) => void;
+  setIsRecordPaymentOpen: (open: boolean) => void;
+  setIsGiveCreditOpen: (open: boolean) => void;
+  setIsAddNewProductOpen: (open: boolean) => void;
+
+  // Cart Operations
+  addToCart: (productId: string, variant: string, color: string, qty?: number) => void;
+  updateCartQty: (productId: string, variant: string, color: string, delta: number) => void;
+  removeFromCart: (productId: string, variant: string, color: string) => void;
+  clearCart: () => void;
+
+  // POS Operations
+  addToPosCart: (productId: string, imei?: string) => void;
+  updatePosCartItem: (index: number, updates: Partial<POSCartItem>) => void;
+  removePosCartItem: (index: number) => void;
+  clearPosCart: () => void;
+  generatePOSBill: (customerName: string, customerPhone: string, tender: 'cash' | 'upi' | 'khata') => POSBill | null;
+
+  // Khata Operations
+  recordKhataPayment: (amount: number, description: string, refNo?: string) => void;
+  giveKhataCredit: (amount: number, description: string, refNo?: string) => void;
+
+  // Inventory & Orders
+  addNewProduct: (product: Product) => void;
+  createOrder: (deliveryMode: 'pickup' | 'delivery', hub?: string) => Order | null;
+  updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  submitWarrantyClaim: (imei: string, description: string) => WarrantyClaim | null;
+
+  // Offline & Notifications
+  toggleOffline: () => void;
+  syncOfflineQueue: () => void;
+  showToast: (message: string, type?: 'normal' | 'success' | 'warning' | 'error') => void;
+  removeToast: (id: string) => void;
+}
+
+const StoreContext = createContext<StoreContextType | undefined>(undefined);
+
+const LOCAL_STORAGE_KEY = 'dhyan_enterprise_state_v1';
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [cart, setCart] = useState<CartItem[]>([
+    {
+      productId: 'prod_op12',
+      variant: '512GB / 16GB',
+      color: 'Flowy Emerald',
+      qty: 1
+    }
+  ]);
+  const [posCart, setPosCart] = useState<POSCartItem[]>([
+    {
+      productId: 'prod_op12',
+      imei: '864920061234501',
+      qty: 1,
+      discountPct: 0
+    }
+  ]);
+  const [khataCustomer, setKhataCustomer] = useState<KhataCustomer>(INITIAL_KHATA_CUSTOMER);
+  const [ledger, setLedger] = useState<KhataTransaction[]>(INITIAL_KHATA_LEDGER);
+  const [cashierShift, setCashierShift] = useState<CashierShift>(INITIAL_CASHIER_SHIFT);
+  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+  const [warrantyClaims, setWarrantyClaims] = useState<WarrantyClaim[]>(INITIAL_WARRANTY_CLAIMS);
+
+  const [currentRole, setCurrentRole] = useState<AppRole>('b2c');
+  const [currentTab, setCurrentTab] = useState<AppTab>('storefront');
+  const [viewportMode, setViewportMode] = useState<ViewportMode>('desktop');
+  const [offlineMode, setOfflineMode] = useState<boolean>(false);
+  const [offlineQueue, setOfflineQueue] = useState<any[]>([]);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(INITIAL_PRODUCTS[0]);
+
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [isProductDetailOpen, setIsProductDetailOpen] = useState<boolean>(false);
+  const [isThermalReceiptOpen, setIsThermalReceiptOpen] = useState<boolean>(false);
+  const [isShiftModalOpen, setIsShiftModalOpen] = useState<boolean>(false);
+  const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState<boolean>(false);
+  const [isGiveCreditOpen, setIsGiveCreditOpen] = useState<boolean>(false);
+  const [isAddNewProductOpen, setIsAddNewProductOpen] = useState<boolean>(false);
+  const [isCreateAccountOpen, setIsCreateAccountOpen] = useState<boolean>(false);
+  const [lastGeneratedBill, setLastGeneratedBill] = useState<POSBill | null>(null);
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  // Load from LocalStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.products) setProducts(parsed.products);
+        if (parsed.cart) setCart(parsed.cart);
+        if (parsed.posCart) setPosCart(parsed.posCart);
+        if (parsed.khataCustomer) setKhataCustomer(parsed.khataCustomer);
+        if (parsed.ledger) setLedger(parsed.ledger);
+        if (parsed.cashierShift) setCashierShift(parsed.cashierShift);
+        if (parsed.orders) setOrders(parsed.orders);
+        if (parsed.warrantyClaims) setWarrantyClaims(parsed.warrantyClaims);
+        if (parsed.offlineQueue) setOfflineQueue(parsed.offlineQueue);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Save changes to LocalStorage
+  useEffect(() => {
+    try {
+      const toSave = {
+        products,
+        cart,
+        posCart,
+        khataCustomer,
+        ledger,
+        cashierShift,
+        orders,
+        warrantyClaims,
+        offlineQueue
+      };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toSave));
+    } catch {
+      // ignore
+    }
+  }, [products, cart, posCart, khataCustomer, ledger, cashierShift, orders, warrantyClaims, offlineQueue]);
+
+  const showToast = (message: string, type: 'normal' | 'success' | 'warning' | 'error' = 'normal') => {
+    const id = 'toast_' + Date.now() + Math.random().toString().slice(2, 6);
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3500);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const setRole = (role: AppRole) => {
+    setCurrentRole(role);
+    if (role === 'pos') {
+      setCurrentTab('pos');
+      showToast('Switched to In-Store POS Mode', 'normal');
+    } else if (role === 'b2b') {
+      setCurrentTab('b2b');
+      showToast('Switched to B2B Wholesale Portal', 'normal');
+    } else {
+      setCurrentTab('storefront');
+      showToast('Switched to Customer Storefront', 'normal');
+    }
+  };
+
+  const setTab = (tab: AppTab) => {
+    setCurrentTab(tab);
+  };
+
+  const setViewport = (mode: ViewportMode) => {
+    setViewportMode(mode);
+  };
+
+  // Cart
+  const addToCart = (productId: string, variant: string, color: string, qty: number = 1) => {
+    setCart((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.productId === productId && item.variant === variant && item.color === color
+      );
+      if (existingIndex > -1) {
+        const copy = [...prev];
+        copy[existingIndex].qty += qty;
+        return copy;
+      }
+      return [...prev, { productId, variant, color, qty }];
+    });
+    showToast('Added to shopping bag!', 'success');
+  };
+
+  const updateCartQty = (productId: string, variant: string, color: string, delta: number) => {
+    setCart((prev) => {
+      return prev
+        .map((item) => {
+          if (item.productId === productId && item.variant === variant && item.color === color) {
+            return { ...item, qty: Math.max(0, item.qty + delta) };
+          }
+          return item;
+        })
+        .filter((item) => item.qty > 0);
+    });
+  };
+
+  const removeFromCart = (productId: string, variant: string, color: string) => {
+    setCart((prev) =>
+      prev.filter(
+        (item) => !(item.productId === productId && item.variant === variant && item.color === color)
+      )
+    );
+    showToast('Item removed from bag', 'normal');
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  // POS Cart
+  const addToPosCart = (productId: string, imei?: string) => {
+    const product = products.find((p) => p.id === productId);
+    if (!product) return;
+    const assignedImei = imei || (product.imeis && product.imeis[0]) || '';
+    setPosCart((prev) => [
+      ...prev,
+      {
+        productId,
+        imei: assignedImei,
+        qty: 1,
+        discountPct: 0
+      }
+    ]);
+    showToast(`Added ${product.title} to POS bill`, 'success');
+  };
+
+  const updatePosCartItem = (index: number, updates: Partial<POSCartItem>) => {
+    setPosCart((prev) => {
+      const copy = [...prev];
+      if (copy[index]) {
+        copy[index] = { ...copy[index], ...updates };
+      }
+      return copy;
+    });
+  };
+
+  const removePosCartItem = (index: number) => {
+    setPosCart((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+  const clearPosCart = () => {
+    setPosCart([]);
+  };
+
+  const generatePOSBill = (
+    customerName: string,
+    customerPhone: string,
+    tender: 'cash' | 'upi' | 'khata'
+  ): POSBill | null => {
+    if (posCart.length === 0) {
+      showToast('POS Cart is empty!', 'error');
+      return null;
+    }
+
+    let subtotal = 0;
+    const items = posCart.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      const price = product ? product.retailPrice : 0;
+      const discountedPrice = price * (1 - (item.discountPct || 0) / 100);
+      const total = discountedPrice * item.qty;
+      subtotal += total;
+      return {
+        productId: item.productId,
+        sku: product?.sku || 'SKU-GEN',
+        title: product?.title || 'Unknown Product',
+        imei: item.imei,
+        qty: item.qty,
+        rate: price,
+        total
+      };
+    });
+
+    const gstTotal = Math.round(subtotal * 0.18);
+    const grandTotal = subtotal;
+
+    const billNo = 'DHY-POS-' + Math.floor(100000 + Math.random() * 900000);
+    const date = new Date().toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const newBill: POSBill = {
+      billNo,
+      date,
+      customerName: customerName || 'Walk-in Customer',
+      customerPhone: customerPhone || '+91 98000 00000',
+      items,
+      subtotal,
+      gstTotal,
+      discount: 0,
+      grandTotal,
+      tender,
+      synced: !offlineMode
+    };
+
+    if (offlineMode) {
+      setOfflineQueue((prev) => [...prev, { type: 'POS_BILL', payload: newBill }]);
+      showToast(`Bill ${billNo} generated and cached offline`, 'warning');
+    } else {
+      showToast(`Bill ${billNo} generated successfully!`, 'success');
+    }
+
+    // Update Cashier Shift
+    setCashierShift((prev) => ({
+      ...prev,
+      cashCollected: tender === 'cash' ? prev.cashCollected + grandTotal : prev.cashCollected,
+      upiCollected: tender === 'upi' ? prev.upiCollected + grandTotal : prev.upiCollected
+    }));
+
+    // If Khata tender, charge ledger
+    if (tender === 'khata') {
+      giveKhataCredit(grandTotal, `Counter POS Bill #${billNo}`, billNo);
+    }
+
+    setLastGeneratedBill(newBill);
+    setIsThermalReceiptOpen(true);
+    clearPosCart();
+    return newBill;
+  };
+
+  // Khata Operations
+  const recordKhataPayment = (amount: number, description: string, refNo?: string) => {
+    if (amount <= 0) return;
+    const newBalance = khataCustomer.currentBalance - amount;
+    const date = new Date().toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const newTx: KhataTransaction = {
+      id: 'tx_' + Date.now(),
+      date,
+      description: description || 'Payment Received via RTGS/UPI',
+      debit: 0,
+      credit: amount,
+      balance: Math.max(0, newBalance),
+      refNo: refNo || 'PAY-REF-' + Math.floor(10000 + Math.random() * 90000)
+    };
+
+    setLedger((prev) => [newTx, ...prev]);
+    setKhataCustomer((prev) => ({ ...prev, currentBalance: Math.max(0, newBalance) }));
+    showToast(`Recorded payment of ₹${amount.toLocaleString('en-IN')}`, 'success');
+  };
+
+  const giveKhataCredit = (amount: number, description: string, refNo?: string) => {
+    if (amount <= 0) return;
+    const newBalance = khataCustomer.currentBalance + amount;
+    const date = new Date().toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const newTx: KhataTransaction = {
+      id: 'tx_' + Date.now(),
+      date,
+      description: description || 'Wholesale Order Credit',
+      debit: amount,
+      credit: 0,
+      balance: newBalance,
+      refNo: refNo || 'INV-WH-' + Math.floor(1000 + Math.random() * 9000)
+    };
+
+    setLedger((prev) => [newTx, ...prev]);
+    setKhataCustomer((prev) => ({ ...prev, currentBalance: newBalance }));
+    showToast(`Added ₹${amount.toLocaleString('en-IN')} credit invoice`, 'warning');
+  };
+
+  // Add Product
+  const addNewProduct = (product: Product) => {
+    setProducts((prev) => [product, ...prev]);
+    showToast(`Registered SKU ${product.sku} successfully!`, 'success');
+  };
+
+  // Orders
+  const createOrder = (deliveryMode: 'pickup' | 'delivery', hub: string = 'Station Road Flagship Desk #02'): Order | null => {
+    if (cart.length === 0) return null;
+
+    let subtotal = 0;
+    const items = cart.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      const isB2B = currentRole === 'b2b';
+      const price = product ? (isB2B ? product.wholesalePrice : product.retailPrice) : 0;
+      subtotal += price * item.qty;
+      return {
+        productId: item.productId,
+        title: product?.title || 'Electronics Item',
+        variant: item.variant,
+        color: item.color,
+        qty: item.qty,
+        price,
+        imei: product?.imeis[0] || '864920061234501'
+      };
+    });
+
+    const gst = Math.round(subtotal * 0.18);
+    const deliveryFee = deliveryMode === 'delivery' ? 149 : 0;
+    const total = subtotal + deliveryFee;
+
+    const orderId = 'DHY-' + Math.floor(10000 + Math.random() * 90000);
+    const pickupPin = Math.floor(1000 + Math.random() * 9000).toString();
+    const date = new Date().toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const newOrder: Order = {
+      orderId,
+      date,
+      customerName: 'Jatin Dave',
+      customerPhone: '+91 98765 43210',
+      items,
+      deliveryMode,
+      pickupHub: hub,
+      pickupPin,
+      pickupQr: `${orderId}-PIN${pickupPin}`,
+      status: 'ready_for_pickup',
+      subtotal,
+      gst,
+      deliveryFee,
+      total
+    };
+
+    setOrders((prev) => [newOrder, ...prev]);
+    clearCart();
+    setIsCartOpen(false);
+    showToast(`Order #${orderId} placed successfully!`, 'success');
+    return newOrder;
+  };
+
+  const updateOrderStatus = (orderId: string, status: Order['status']) => {
+    setOrders((prev) =>
+      prev.map((order) => (order.orderId === orderId ? { ...order, status } : order))
+    );
+    showToast(`Order ${orderId} updated to ${status.replace(/_/g, ' ')}`, 'normal');
+  };
+
+  const submitWarrantyClaim = (imei: string, description: string): WarrantyClaim | null => {
+    const product = products.find((p) => p.imeis && p.imeis.includes(imei)) || products[0];
+    const claimId = 'WAR-' + Math.floor(1000 + Math.random() * 9000);
+    const newClaim: WarrantyClaim = {
+      claimId,
+      imei,
+      productTitle: product.title,
+      purchaseDate: '15 Jan 2026',
+      warrantyStatus: 'Active',
+      expiryDate: '14 Jan 2027',
+      issueDescription: description,
+      status: 'Submitted'
+    };
+    setWarrantyClaims((prev) => [newClaim, ...prev]);
+    showToast(`Warranty claim #${claimId} submitted!`, 'success');
+    return newClaim;
+  };
+
+  // Offline Simulator
+  const toggleOffline = () => {
+    setOfflineMode((prev) => {
+      const next = !prev;
+      if (next) {
+        showToast('⚠️ Offline Mode active: Network disconnected', 'warning');
+      } else {
+        showToast('Online: Network restored!', 'success');
+        syncOfflineQueue();
+      }
+      return next;
+    });
+  };
+
+  const syncOfflineQueue = () => {
+    if (offlineQueue.length === 0) {
+      showToast('All local transactions are already synchronized', 'normal');
+      return;
+    }
+    const count = offlineQueue.length;
+    setOfflineQueue([]);
+    showToast(`Successfully synchronized ${count} queued transaction(s) to cloud!`, 'success');
+  };
+
+  return (
+    <StoreContext.Provider
+      value={{
+        products,
+        cart,
+        posCart,
+        khataCustomer,
+        ledger,
+        cashierShift,
+        orders,
+        warrantyClaims,
+        currentRole,
+        currentTab,
+        viewportMode,
+        offlineMode,
+        offlineQueue,
+        selectedCategory,
+        searchQuery,
+        selectedProduct,
+        isCartOpen,
+        isProductDetailOpen,
+        isThermalReceiptOpen,
+        isShiftModalOpen,
+        isRecordPaymentOpen,
+        isGiveCreditOpen,
+        isAddNewProductOpen,
+        isCreateAccountOpen,
+        lastGeneratedBill,
+        toasts,
+        setRole,
+        setTab,
+        setViewport,
+        setCategory: setSelectedCategory,
+        setSearchQuery,
+        setSelectedProduct,
+        setIsCartOpen,
+        setIsProductDetailOpen,
+        setIsCreateAccountOpen,
+        setIsThermalReceiptOpen,
+        setIsShiftModalOpen,
+        setIsRecordPaymentOpen,
+        setIsGiveCreditOpen,
+        setIsAddNewProductOpen,
+        addToCart,
+        updateCartQty,
+        removeFromCart,
+        clearCart,
+        addToPosCart,
+        updatePosCartItem,
+        removePosCartItem,
+        clearPosCart,
+        generatePOSBill,
+        recordKhataPayment,
+        giveKhataCredit,
+        addNewProduct,
+        createOrder,
+        updateOrderStatus,
+        submitWarrantyClaim,
+        toggleOffline,
+        syncOfflineQueue,
+        showToast,
+        removeToast
+      }}
+    >
+      {children}
+    </StoreContext.Provider>
+  );
+}
+
+export function useStore() {
+  const context = useContext(StoreContext);
+  if (!context) {
+    throw new Error('useStore must be used within a StoreProvider');
+  }
+  return context;
+}

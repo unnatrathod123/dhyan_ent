@@ -1,69 +1,99 @@
-import Image from "next/image";
+'use client';
+
+import React from 'react';
+import { useStore } from '@/lib/store/StoreContext';
+import DevSimulatorBar from '@/components/common/DevSimulatorBar';
+import BottomNav from '@/components/common/BottomNav';
+import ToastContainer from '@/components/common/ToastContainer';
+
+// Stitch Exact Screens
+import StitchHomeView from '@/components/storefront/StitchHomeView';
+import StitchProductDetailView from '@/components/storefront/StitchProductDetailView';
+import StitchCreateAccountView from '@/components/auth/StitchCreateAccountView';
+import StitchCheckoutView from '@/components/cart/StitchCheckoutView';
+import StitchPOSView from '@/components/pos/StitchPOSView';
+import StitchKhataView from '@/components/khata/StitchKhataView';
+import StitchB2BView from '@/components/b2b/StitchB2BView';
+
+// Enterprise Modals & Supplementary Views
+import InventoryManagerView from '@/components/inventory/InventoryManagerView';
+import WarrantyView from '@/components/warranty/WarrantyView';
+import ThermalReceiptModal from '@/components/pos/ThermalReceiptModal';
+import CashierShiftModal from '@/components/pos/CashierShiftModal';
+import RecordPaymentModal from '@/components/khata/RecordPaymentModal';
+import AddCreditModal from '@/components/khata/AddCreditModal';
 
 export default function Home() {
+  const { currentTab, isProductDetailOpen, isCreateAccountOpen, viewportMode } = useStore();
+
+  const isMobile = viewportMode === 'mobile';
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <div
+      className={`h-[100dvh] max-h-[100dvh] flex flex-col font-sans transition-colors duration-300 overflow-hidden ${
+        isMobile ? 'bg-[#0b1320]' : 'bg-[#eef2f6]'
+      }`}
+    >
+      {/* Top Prototype Toolbar with One-Click Jump to Any Stitch Screen */}
+      <DevSimulatorBar />
+
+      {/* Main Container */}
+      <main
+        className={`flex-1 min-h-0 flex flex-col justify-center items-center overflow-hidden ${
+          isMobile ? 'py-0 sm:py-3 px-0 sm:px-4' : 'py-0 sm:py-2 px-0 sm:px-4'
+        }`}
+      >
+        <div
+          className={
+            isMobile
+              ? 'w-full max-sm:max-w-full sm:max-w-[420px] mx-auto bg-[#f8f9ff] h-full sm:h-full sm:max-h-[850px] sm:rounded-[44px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] sm:border-[8px] sm:border-slate-900 flex flex-col overflow-hidden relative'
+              : 'w-full max-w-5xl mx-auto bg-[#f8f9ff] h-full sm:rounded-2xl sm:shadow-xl sm:border sm:border-slate-200/80 flex flex-col overflow-hidden relative'
+          }
+        >
+          {/* If create account is open, render StitchCreateAccountView */}
+          {isCreateAccountOpen || currentTab === 'register' ? (
+            <StitchCreateAccountView />
+          ) : isProductDetailOpen ? (
+            <StitchProductDetailView />
+          ) : (
+            <>
+              {/* Main Scrollable View Area */}
+              <div className="flex-1 overflow-y-auto">
+                {/* 1. STITCH STOREFRONT (stitch_home.png) */}
+                {(currentTab === 'storefront' || currentTab === 'catalog') && (
+                  <StitchHomeView />
+                )}
+
+                {/* 2. STITCH CHECKOUT FLOW (stitch_cart.png) */}
+                {currentTab === 'orders' && <StitchCheckoutView />}
+
+                {/* 3. STITCH POS BILLING COUNTER (stitch_pos.png) */}
+                {currentTab === 'pos' && <StitchPOSView />}
+
+                {/* 4. STITCH KHATA ACCOUNTING LEDGER (stitch_khata.png) */}
+                {currentTab === 'khata' && <StitchKhataView />}
+
+                {/* 5. STITCH B2B WHOLESALE HUB (stitch_b2b.png) */}
+                {currentTab === 'b2b' && <StitchB2BView />}
+
+                {/* Supplementary Operations */}
+                {currentTab === 'inventory' && <InventoryManagerView />}
+                {currentTab === 'warranty' && <WarrantyView />}
+              </div>
+
+              {/* Stitch 4-Tab Bottom Navigation (Home, Catalog, Orders, Cart) */}
+              <BottomNav />
+            </>
+          )}
         </div>
       </main>
+
+      {/* Modals & Slide-ups */}
+      <ThermalReceiptModal />
+      <CashierShiftModal />
+      <RecordPaymentModal />
+      <AddCreditModal />
+      <ToastContainer />
     </div>
   );
 }

@@ -149,6 +149,7 @@ export default function StitchCreateAccountView() {
                 src="/Dhyan_Logo.png"
                 alt="Dhyan Enterprise"
                 fill
+                sizes="176px"
                 priority
                 className="object-contain"
               />

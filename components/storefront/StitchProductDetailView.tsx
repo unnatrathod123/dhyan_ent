@@ -109,8 +109,10 @@ export default function StitchProductDetailView() {
         <div className="relative aspect-square w-full max-w-sm mx-auto rounded-2xl overflow-hidden bg-slate-50">
           <Image
             src={selectedProduct.imageUrl || '/images/oneplus_12.jpg'}
-            alt="OnePlus 12 5G"
+            alt={selectedProduct.title || 'Product Image'}
             fill
+            sizes="(max-width: 640px) 100vw, 384px"
+            priority
             className="object-cover"
           />
           <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">

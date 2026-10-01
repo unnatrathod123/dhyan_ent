@@ -84,6 +84,7 @@ export default function StitchHomeView() {
                 src="/Dhyan_Logo.png"
                 alt="Dhyan Enterprise"
                 fill
+                sizes="(max-width: 640px) 112px, 128px"
                 priority
                 className="object-contain object-left"
               />
@@ -301,6 +302,7 @@ export default function StitchHomeView() {
                       src={prod.imageUrl}
                       alt={prod.title}
                       fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

@@ -50,6 +50,7 @@ export default function StitchB2BView() {
               src="/Dhyan_Logo.png"
               alt="Dhyan Enterprise"
               fill
+              sizes="(max-width: 640px) 96px, 112px"
               priority
               className="object-contain object-left"
             />
@@ -340,6 +341,7 @@ export default function StitchB2BView() {
                   src="/images/oneplus_12.jpg"
                   alt="OnePlus 12"
                   fill
+                  sizes="80px"
                   className="object-cover"
                 />
               </div>
@@ -431,6 +433,7 @@ export default function StitchB2BView() {
                   src="/images/s24_ultra.jpg"
                   alt="Samsung Galaxy S24 Ultra"
                   fill
+                  sizes="80px"
                   className="object-cover"
                 />
               </div>

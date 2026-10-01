@@ -55,6 +55,7 @@ export default function Header({ onOpenSearch }: HeaderProps) {
                 src="/Dhyan_Logo.png"
                 alt="Dhyan Enterprise"
                 fill
+                sizes="(max-width: 640px) 112px, 128px"
                 priority
                 className="object-contain object-left"
               />

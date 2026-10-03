@@ -202,42 +202,46 @@ export default function TechHubB2BPortal() {
           </div>
 
           {/* Credit & Terms Card */}
-          <div className="bg-white/10 rounded-2xl p-4 border border-white/15 backdrop-blur-xs flex gap-6 text-left">
+          <div className="bg-white/10 rounded-2xl p-3.5 sm:p-4 border border-white/15 backdrop-blur-xs grid grid-cols-2 gap-3 sm:gap-6 text-left">
             <div>
-              <div className="text-[11px] text-slate-300 font-medium">Khata Credit Limit</div>
-              <div className="text-xl font-extrabold text-white mt-0.5">
+              <div className="text-[10px] sm:text-[11px] text-slate-300 font-medium">Khata Credit Limit</div>
+              <div className="text-base sm:text-xl font-extrabold text-white mt-0.5 truncate">
                 {formatCurrency(currentUser.creditLimit || 50000, currency)}
               </div>
-              <div className="text-[10px] text-emerald-300 font-semibold mt-0.5">● Net-30 Active</div>
+              <div className="text-[9px] sm:text-[10px] text-emerald-300 font-semibold mt-0.5">● Net-30 Active</div>
             </div>
 
-            <div className="border-l border-white/15 pl-6">
-              <div className="text-[11px] text-slate-300 font-medium">Available Balance</div>
-              <div className="text-xl font-extrabold text-blue-300 mt-0.5">
+            <div className="border-l border-white/15 pl-3 sm:pl-6">
+              <div className="text-[10px] sm:text-[11px] text-slate-300 font-medium">Available Balance</div>
+              <div className="text-base sm:text-xl font-extrabold text-blue-300 mt-0.5 truncate">
                 {formatCurrency(
                   (currentUser.creditLimit || 50000) - (currentUser.usedCredit || 0),
                   currency
                 )}
               </div>
-              <div className="text-[10px] text-slate-300 mt-0.5">0 Overdue Invoices</div>
+              <div className="text-[9px] sm:text-[10px] text-slate-300 mt-0.5">0 Overdue Invoices</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Bulk Quick-Order Sheet */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <FileSpreadsheet size={20} className="text-[#2563eb]" />
+            <FileSpreadsheet size={20} className="text-[#2563eb] shrink-0" />
             <div>
-              <h2 className="text-base font-bold text-slate-900">Wholesale Bulk Quick-Order Sheet</h2>
-              <p className="text-xs text-slate-500">Order by cartons or case packs directly with volume discounts</p>
+              <h2 className="text-sm sm:text-base font-bold text-slate-900">Wholesale Bulk Quick-Order Sheet</h2>
+              <p className="text-[11px] sm:text-xs text-slate-500">Order by cartons or case packs directly with volume discounts</p>
             </div>
           </div>
+
+          <span className="text-[10px] text-[#2563eb] bg-blue-50 px-2.5 py-0.5 rounded-full font-medium sm:hidden self-start">
+            ← Swipe to view all pricing columns →
+          </span>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[10px] font-bold">
               <tr>

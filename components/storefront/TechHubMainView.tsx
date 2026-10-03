@@ -95,12 +95,12 @@ export default function TechHubMainView() {
       />
 
       {/* Mode Sub-navigation: Storefront vs B2B Wholesale Portal */}
-      <div className="bg-slate-50 border-b border-slate-200/60 py-2 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-1 sm:gap-2">
+      <div className="bg-slate-50 border-b border-slate-200/60 py-2 px-3 sm:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => setViewMode('storefront')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+              className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold transition ${
                 viewMode === 'storefront'
                   ? 'bg-white text-[#2563eb] shadow-xs border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
@@ -111,7 +111,7 @@ export default function TechHubMainView() {
 
             <button
               onClick={() => setViewMode('b2b_portal')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${
+              className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${
                 viewMode === 'b2b_portal'
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-blue-600'
@@ -122,7 +122,7 @@ export default function TechHubMainView() {
             </button>
           </div>
 
-          <div className="text-[11px] text-slate-500 hidden sm:flex items-center gap-2">
+          <div className="text-[11px] text-slate-500 hidden md:flex items-center gap-2">
             <span>Customer Persona:</span>
             <span className="font-bold text-slate-800">
               {currentUser
@@ -168,10 +168,10 @@ export default function TechHubMainView() {
             )}
 
             {/* 5. Complete Catalog Grid */}
-            <section id="catalog-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-slate-100">
+            <section id="catalog-section" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-10 border-t border-slate-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                     {activeCategory !== 'all'
                       ? `${activeCategory.replace('_', ' ').toUpperCase()} Catalog`
                       : activeBrand !== 'All'
@@ -184,12 +184,12 @@ export default function TechHubMainView() {
                 </div>
 
                 {/* Filter tags */}
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {['all', 'phones', 'cables', 'chargers', 'spare_parts', 'accessories'].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium capitalize border transition ${
+                      className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium capitalize border transition ${
                         activeCategory === cat
                           ? 'bg-[#2563eb] text-white border-[#2563eb]'
                           : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
@@ -212,8 +212,8 @@ export default function TechHubMainView() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 text-xs py-12 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-slate-900 text-slate-400 text-xs py-10 sm:py-12 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="relative h-9 w-36 mb-3 brightness-0 invert opacity-90">
               <Image

@@ -75,16 +75,16 @@ export default function TechHubProductDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
       <div
-        className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-3xl w-full overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
+        className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 max-w-3xl w-full overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Bar */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              {product.brand} • {product.category}
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
+              {product.brand} • {product.category.replace('_', ' ')}
             </span>
           </div>
 
@@ -97,10 +97,10 @@ export default function TechHubProductDetailModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 items-start">
             {/* Left: Product Image */}
-            <div className="relative aspect-square w-full rounded-2xl bg-white border border-slate-100 p-6 flex items-center justify-center">
+            <div className="relative aspect-square sm:aspect-square w-full rounded-2xl bg-white border border-slate-100 p-4 sm:p-6 flex items-center justify-center max-h-[280px] sm:max-h-none mx-auto">
               {product.imageUrl ? (
                 <div className="relative w-full h-full">
                   <Image
@@ -118,16 +118,16 @@ export default function TechHubProductDetailModal({
               )}
 
               {isB2BApproved && (
-                <div className="absolute top-3 left-3 bg-[#2563eb] text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+                <div className="absolute top-3 left-3 bg-[#2563eb] text-white text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
                   Wholesale Trade Tier
                 </div>
               )}
             </div>
 
             {/* Right: Info & Pricing */}
-            <div className="space-y-5">
+            <div className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                <h2 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
                   {product.title}
                 </h2>
                 <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">

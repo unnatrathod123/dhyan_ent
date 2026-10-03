@@ -81,18 +81,18 @@ export default function TechHubAuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
       <div
-        className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
+        className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900">
               {authModalTab === 'register' ? 'Join TechHub' : 'Welcome Back'}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-[11px] sm:text-xs text-slate-500">
               {authModalTab === 'register'
                 ? 'Select your account type to continue shopping'
                 : 'Sign in to access your personal or wholesale account'}
@@ -109,7 +109,7 @@ export default function TechHubAuthModal() {
 
         {/* Pending Product Notice if triggered by Add to Cart */}
         {pendingProduct && (
-          <div className="bg-blue-50/90 border-b border-blue-100 px-6 py-2.5 flex items-center gap-3 text-xs text-blue-900">
+          <div className="bg-blue-50/90 border-b border-blue-100 px-4 sm:px-6 py-2 sm:py-2.5 flex items-center gap-2.5 sm:gap-3 text-xs text-blue-900">
             <Sparkles size={16} className="text-[#2563eb] shrink-0" />
             <div className="flex-1">
               <span>Adding <strong>{pendingProduct.title}</strong> to your cart. Please create an account or sign in to complete.</span>
@@ -121,7 +121,7 @@ export default function TechHubAuthModal() {
         <div className="flex border-b border-slate-100 bg-slate-50/30">
           <button
             onClick={() => setAuthModalTab('register')}
-            className={`flex-1 py-3 text-xs font-semibold text-center border-b-2 transition ${
+            className={`flex-1 py-2.5 sm:py-3 text-xs font-semibold text-center border-b-2 transition ${
               authModalTab === 'register'
                 ? 'border-[#2563eb] text-[#2563eb] bg-white'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -131,7 +131,7 @@ export default function TechHubAuthModal() {
           </button>
           <button
             onClick={() => setAuthModalTab('login')}
-            className={`flex-1 py-3 text-xs font-semibold text-center border-b-2 transition ${
+            className={`flex-1 py-2.5 sm:py-3 text-xs font-semibold text-center border-b-2 transition ${
               authModalTab === 'login'
                 ? 'border-[#2563eb] text-[#2563eb] bg-white'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -142,7 +142,7 @@ export default function TechHubAuthModal() {
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6">
           {authModalTab === 'register' ? (
             <form onSubmit={handleRegisterSubmit} className="space-y-5">
               {/* Step 1: Customer Type Selector (B2C vs B2B) */}
@@ -240,7 +240,7 @@ export default function TechHubAuthModal() {
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                    className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                     placeholder="e.g. Alex Johnson"
                   />
                 </div>
@@ -253,7 +253,7 @@ export default function TechHubAuthModal() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                      className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                       placeholder="name@example.com"
                     />
                   </div>
@@ -265,7 +265,7 @@ export default function TechHubAuthModal() {
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                      className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                       placeholder="+1 (555) 000-0000"
                     />
                   </div>
@@ -284,7 +284,7 @@ export default function TechHubAuthModal() {
                           required
                           value={businessName}
                           onChange={(e) => setBusinessName(e.target.value)}
-                          className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                          className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                           placeholder="e.g. Apex Electronics Ltd"
                         />
                       </div>
@@ -298,7 +298,7 @@ export default function TechHubAuthModal() {
                           required
                           value={gstin}
                           onChange={(e) => setGstin(e.target.value.toUpperCase())}
-                          className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100 font-mono uppercase"
+                          className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100 font-mono uppercase"
                           placeholder="24AAACD1234F1Z5"
                         />
                       </div>
@@ -312,7 +312,7 @@ export default function TechHubAuthModal() {
                         <select
                           value={businessType}
                           onChange={(e: any) => setBusinessType(e.target.value)}
-                          className="w-full text-sm px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100 bg-white"
+                          className="w-full text-base sm:text-sm px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100 bg-white"
                         >
                           <option value="retailer">Mobile & Tech Retail Store</option>
                           <option value="repair_shop">Repair & Spare Parts Center</option>
@@ -328,7 +328,7 @@ export default function TechHubAuthModal() {
                           required
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
-                          className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                          className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                           placeholder="New York / Mumbai"
                         />
                       </div>
@@ -343,7 +343,7 @@ export default function TechHubAuthModal() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                    className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                     placeholder="••••••••••••"
                   />
                 </div>
@@ -376,7 +376,7 @@ export default function TechHubAuthModal() {
                   required
                   value={loginIdentifier}
                   onChange={(e) => setLoginIdentifier(e.target.value)}
-                  className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                  className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                   placeholder="name@example.com or 9876543210"
                 />
               </div>
@@ -387,7 +387,7 @@ export default function TechHubAuthModal() {
                   type="password"
                   required
                   defaultValue="Password123"
-                  className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
+                  className="w-full text-base sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100"
                   placeholder="••••••••••••"
                 />
               </div>

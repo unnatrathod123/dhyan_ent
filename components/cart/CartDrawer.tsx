@@ -102,26 +102,26 @@ export default function CartDrawer() {
             <div className="grid grid-cols-2 p-1 bg-slate-200/80 rounded-xl gap-1">
               <button
                 onClick={() => setDeliveryMode('pickup')}
-                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition ${
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs font-bold transition ${
                   deliveryMode === 'pickup'
                     ? 'bg-white text-[#0076DF] shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <MapPin size={14} />
-                <span>Counter Pickup (15m)</span>
+                <MapPin size={14} className="shrink-0" />
+                <span className="truncate">Counter Pickup (15m)</span>
               </button>
 
               <button
                 onClick={() => setDeliveryMode('delivery')}
-                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition ${
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs font-bold transition ${
                   deliveryMode === 'delivery'
                     ? 'bg-white text-[#0076DF] shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Truck size={14} />
-                <span>Doorstep Express</span>
+                <Truck size={14} className="shrink-0" />
+                <span className="truncate">Express Courier</span>
               </button>
             </div>
 

@@ -370,6 +370,230 @@ export const INITIAL_PRODUCTS: Product[] = [
       { minQty: 5, maxQty: 19, priceUSD: 28.0, priceINR: 1650 },
       { minQty: 20, priceUSD: 24.5, priceINR: 1450 }
     ]
+  },
+  {
+    id: 'prod_nothing_2a',
+    sku: 'NOT-PH2A-GRY',
+    title: 'Nothing Phone (2a) Plus',
+    brand: 'Nothing',
+    category: 'phones',
+    subtitle: 'Metallic Grey • Glyph Interface',
+    retailPrice: 27999,
+    wholesalePrice: 23499,
+    retailPriceUSD: 329.0,
+    wholesalePriceUSD: 279.0,
+    mrp: 31999,
+    discount: '-13% OFF',
+    rating: 4.8,
+    reviewsCount: 1240,
+    stockCount: 35,
+    warranty: '1 Year Nothing Warranty',
+    description: 'Distinctive transparent industrial design with customizable Glyph lights. Powered by Dimensity 7350 Pro 5G, 50MP dual cameras, and 50W fast charging.',
+    imageUrl: '/images/nothing_phone_2a.jpg',
+    specs: {
+      processor: 'MediaTek Dimensity 7350 Pro 5G (4nm)',
+      battery: '5000 mAh (50W Fast Charge)',
+      camera: '50MP Main OIS + 50MP Ultra-Wide + 50MP Front',
+      display: '6.7" Flexible AMOLED 120Hz 1300 nits'
+    },
+    variants: ['12GB RAM + 256GB Storage', '8GB RAM + 256GB Storage'],
+    colors: [
+      { name: 'Metallic Grey', hex: '#8c8f94' },
+      { name: 'Black', hex: '#18181b' }
+    ],
+    imeis: ['862901928374001', '862901928374002'],
+    moq: 2,
+    volumeTiers: [
+      { minQty: 2, maxQty: 4, priceUSD: 279.0, priceINR: 23499 },
+      { minQty: 5, priceUSD: 265.0, priceINR: 22200 }
+    ]
+  },
+  {
+    id: 'prod_s24u_screen',
+    sku: 'SAM-SCR-S24U',
+    title: 'Galaxy S24 Ultra AMOLED Screen Assembly',
+    brand: 'Samsung',
+    category: 'spare_parts',
+    subtitle: 'Dynamic AMOLED 2X with Frame',
+    retailPrice: 21999,
+    wholesalePrice: 14500,
+    retailPriceUSD: 249.0,
+    wholesalePriceUSD: 169.0,
+    mrp: 28999,
+    discount: '-24% OFF',
+    rating: 4.9,
+    reviewsCount: 215,
+    stockCount: 28,
+    warranty: '6 Months TechHub OEM Warranty',
+    description: 'Original Service Pack replacement display assembly with pre-installed Titanium frame, Corning Gorilla Armor glass, 120Hz LTPO, and fingerprint sensor flex.',
+    imageUrl: '/images/galaxy_screen_assembly.jpg',
+    specs: {
+      display: '6.8" Quad HD+ Dynamic AMOLED 2X 120Hz (2600 nits)',
+      material: 'Corning Gorilla Armor Glass & Titanium Frame',
+      compatibility: 'Samsung Galaxy S24 Ultra (SM-S928B, SM-S928U)',
+      warrantyPeriod: '6 Months Direct Replacement'
+    },
+    variants: ['Original Service Pack with Frame', 'OLED Assembly (No Frame)'],
+    colors: [
+      { name: 'Titanium Gray', hex: '#636569' },
+      { name: 'Titanium Black', hex: '#212121' }
+    ],
+    imeis: [],
+    moq: 3,
+    volumeTiers: [
+      { minQty: 3, maxQty: 9, priceUSD: 169.0, priceINR: 14500 },
+      { minQty: 10, maxQty: 24, priceUSD: 155.0, priceINR: 13200 },
+      { minQty: 25, priceUSD: 142.0, priceINR: 12100 }
+    ]
+  },
+  {
+    id: 'prod_airpods_pro_2',
+    sku: 'APL-APP2-USBC',
+    title: 'AirPods Pro (2nd Gen, USB-C)',
+    brand: 'Apple',
+    category: 'accessories',
+    subtitle: 'MagSafe Case (USB-C)',
+    retailPrice: 24900,
+    wholesalePrice: 18900,
+    retailPriceUSD: 249.0,
+    wholesalePriceUSD: 189.0,
+    mrp: 26900,
+    discount: '-8% OFF',
+    rating: 4.9,
+    reviewsCount: 3800,
+    stockCount: 45,
+    warranty: '1 Year Apple Brand Warranty',
+    description: 'Up to 2x more Active Noise Cancellation, Adaptive Audio, Transparency mode, and Personalized Spatial Audio with dynamic head tracking. Dust, sweat, and water resistant.',
+    imageUrl: '/images/airpods_pro_2.jpg',
+    specs: {
+      battery: 'Up to 6 hrs listening (30 hrs with MagSafe USB-C case)',
+      powerOutput: 'MagSafe Wireless + Qi + USB-C fast charging',
+      compatibility: 'iPhone, iPad, Mac, Apple Watch, Apple TV',
+      warrantyPeriod: '1 Year Apple Warranty'
+    },
+    variants: ['USB-C MagSafe Case Edition'],
+    colors: [{ name: 'Glossy White', hex: '#ffffff' }],
+    imeis: ['SN-APLAPP2-01', 'SN-APLAPP2-02'],
+    moq: 3,
+    volumeTiers: [
+      { minQty: 3, maxQty: 9, priceUSD: 189.0, priceINR: 18900 },
+      { minQty: 10, priceUSD: 179.0, priceINR: 17900 }
+    ]
+  },
+  {
+    id: 'prod_cmf_65w_gan',
+    sku: 'NOT-CMF-65W',
+    title: 'CMF by Nothing 65W GaN Fast Charger',
+    brand: 'Nothing',
+    category: 'chargers',
+    subtitle: 'Dark Grey & Orange • 3-Port',
+    retailPrice: 2999,
+    wholesalePrice: 1699,
+    retailPriceUSD: 39.99,
+    wholesalePriceUSD: 21.5,
+    mrp: 3999,
+    discount: '-25% OFF',
+    rating: 4.8,
+    reviewsCount: 920,
+    stockCount: 70,
+    warranty: '1 Year Nothing Warranty',
+    description: 'Ultra-compact 65W fast charger powered by GaN technology. 3-in-1 multi-device power delivery with 2 USB-C and 1 USB-A ports. Intelligent heat control.',
+    imageUrl: '/images/cmf_gan_charger.jpg',
+    specs: {
+      powerOutput: '65W Max (USB-C1/C2: 65W, USB-A: 36W)',
+      material: 'Flame Retardant PC Architecture',
+      compatibility: 'Universal Laptops, Tablets, Smartphones, Earbuds',
+      warrantyPeriod: '12 Months'
+    },
+    variants: ['3-Port GaN (2x USB-C + 1x USB-A)'],
+    colors: [
+      { name: 'Orange / Dark Grey', hex: '#ea580c' },
+      { name: 'Matte Black', hex: '#18181b' }
+    ],
+    imeis: [],
+    moq: 5,
+    volumeTiers: [
+      { minQty: 5, maxQty: 19, priceUSD: 21.5, priceINR: 1699 },
+      { minQty: 20, maxQty: 49, priceUSD: 18.5, priceINR: 1499 },
+      { minQty: 50, priceUSD: 16.0, priceINR: 1299 }
+    ]
+  },
+  {
+    id: 'prod_belkin_boostcharge_cable',
+    sku: 'BLK-BST-FLEX',
+    title: 'Belkin BoostCharge Pro Flex Cable',
+    brand: 'Belkin',
+    category: 'cables',
+    subtitle: 'Braided Silicone • 2m',
+    retailPrice: 1899,
+    wholesalePrice: 999,
+    retailPriceUSD: 24.99,
+    wholesalePriceUSD: 12.5,
+    mrp: 2499,
+    discount: '-24% OFF',
+    rating: 4.9,
+    reviewsCount: 610,
+    stockCount: 120,
+    warranty: '5 Year Belkin Warranty',
+    description: 'Double-braided exterior with silicone jacket inside for extreme flexibility and tangle resistance. Includes magnetic cable management strap. Tested to 30,000+ bends.',
+    imageUrl: '/images/belkin_braided_cable.jpg',
+    specs: {
+      powerOutput: '60W PD Fast Charging',
+      material: 'Ultra-flexible Silicone & Double-braided Nylon',
+      compatibility: 'Universal USB-C smartphones, laptops, power banks',
+      warrantyPeriod: '5 Years Replacement'
+    },
+    variants: ['2.0m (6.6ft) USB-C to USB-C', '1.0m (3.3ft) USB-C to USB-C'],
+    colors: [
+      { name: 'Space Gray Braided', hex: '#4b5563' },
+      { name: 'White Braided', hex: '#f1f5f9' }
+    ],
+    imeis: [],
+    moq: 10,
+    volumeTiers: [
+      { minQty: 10, maxQty: 49, priceUSD: 12.5, priceINR: 999 },
+      { minQty: 50, maxQty: 99, priceUSD: 10.5, priceINR: 849 },
+      { minQty: 100, priceUSD: 8.9, priceINR: 699 }
+    ]
+  },
+  {
+    id: 'prod_oem_battery_pack',
+    sku: 'TH-BAT-OEM',
+    title: 'OEM High-Capacity Replacement Battery',
+    brand: 'TechHub',
+    category: 'spare_parts',
+    subtitle: 'Internal Li-Ion Cell with Flex',
+    retailPrice: 2499,
+    wholesalePrice: 1299,
+    retailPriceUSD: 29.99,
+    wholesalePriceUSD: 15.0,
+    mrp: 3499,
+    discount: '-29% OFF',
+    rating: 4.8,
+    reviewsCount: 490,
+    stockCount: 80,
+    warranty: '1 Year Replacement Warranty',
+    description: 'Zero-cycle fresh OEM grade lithium-ion replacement battery with Texas Instruments fuel gauge IC, pre-installed adhesive pull tabs, and over-current protection.',
+    imageUrl: '/images/oem_battery_pack.jpg',
+    specs: {
+      battery: '100% Zero-Cycle Li-Ion (3200-5000 mAh)',
+      material: 'Grade-A Cobalt Polymer with TI Battery IC',
+      compatibility: 'iPhone 13/14/15, Samsung Galaxy S22/S23/S24',
+      warrantyPeriod: '12 Months Direct Replacement'
+    },
+    variants: [
+      'For iPhone 14 / 15 (3279 mAh)',
+      'For Samsung Galaxy S23 / S24 (3900 mAh)',
+      'For iPhone 13 Pro (3095 mAh)'
+    ],
+    colors: [{ name: 'Black Cell', hex: '#18181b' }],
+    imeis: [],
+    moq: 5,
+    volumeTiers: [
+      { minQty: 5, maxQty: 19, priceUSD: 15.0, priceINR: 1299 },
+      { minQty: 20, maxQty: 49, priceUSD: 12.5, priceINR: 1099 },
+      { minQty: 50, priceUSD: 9.99, priceINR: 899 }
+    ]
   }
 ];
 

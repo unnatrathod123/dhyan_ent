@@ -196,13 +196,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // Load from LocalStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('techhub_dhyan_state_v2');
+      const saved = localStorage.getItem('techhub_dhyan_state_v3') || localStorage.getItem('techhub_dhyan_state_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.products && Array.isArray(parsed.products) && parsed.products.length > 0) {
-          const existingIds = new Set(parsed.products.map((p: any) => p.id));
-          const missing = INITIAL_PRODUCTS.filter((p) => !existingIds.has(p.id));
-          setProducts([...parsed.products, ...missing]);
+          const initialMap = new Map(INITIAL_PRODUCTS.map((p) => [p.id, p]));
+          const merged = INITIAL_PRODUCTS.map((initProd) => {
+            const existing = parsed.products.find((p: any) => p.id === initProd.id);
+            return existing ? { ...initProd, ...existing, imageUrl: initProd.imageUrl } : initProd;
+          });
+          const customProds = parsed.products.filter((p: any) => !initialMap.has(p.id));
+          setProducts([...merged, ...customProds]);
+        } else {
+          setProducts(INITIAL_PRODUCTS);
         }
         if (parsed.currentUser) setCurrentUser(parsed.currentUser);
         if (parsed.currency) setCurrency(parsed.currency);
@@ -214,9 +220,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (parsed.orders) setOrders(parsed.orders);
         if (parsed.warrantyClaims) setWarrantyClaims(parsed.warrantyClaims);
         if (parsed.offlineQueue) setOfflineQueue(parsed.offlineQueue);
+      } else {
+        setProducts(INITIAL_PRODUCTS);
       }
     } catch {
-      // ignore
+      setProducts(INITIAL_PRODUCTS);
     } finally {
       setIsHydrated(true);
     }
@@ -239,7 +247,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         warrantyClaims,
         offlineQueue
       };
-      localStorage.setItem('techhub_dhyan_state_v2', JSON.stringify(toSave));
+      localStorage.setItem('techhub_dhyan_state_v3', JSON.stringify(toSave));
     } catch {
       // ignore
     }

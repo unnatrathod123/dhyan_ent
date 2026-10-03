@@ -16,22 +16,37 @@ export default function CartDrawer() {
     updateCartQty,
     removeFromCart,
     clearCart,
-    currentRole,
-    createOrder
+    currentUser,
+    currency,
+    createOrder,
+    giveKhataCredit,
+    showToast
   } = useStore();
 
   const [deliveryMode, setDeliveryMode] = useState<'pickup' | 'delivery'>('pickup');
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'khata'>('online');
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
 
   if (!isCartOpen) return null;
 
-  const isB2B = currentRole === 'b2b';
+  const isB2BApproved = currentUser?.role === 'b2b' && currentUser.b2bStatus === 'approved';
 
   // Calculate bill totals
   let subtotal = 0;
   const detailedItems = cart.map((c) => {
     const p = products.find((prod) => prod.id === c.productId);
-    const unitPrice = p ? (isB2B ? p.wholesalePrice : p.retailPrice) : 0;
+    let unitPrice = 0;
+    if (p) {
+      if (currency === 'USD') {
+        unitPrice = isB2BApproved
+          ? p.wholesalePriceUSD ?? Math.round(p.wholesalePrice / 83)
+          : p.retailPriceUSD ?? Math.round(p.retailPrice / 83);
+      } else {
+        unitPrice = isB2BApproved ? p.wholesalePrice : p.retailPrice;
+      }
+    }
+    unitPrice = unitPrice || 0;
+
     const itemTotal = unitPrice * c.qty;
     subtotal += itemTotal;
     return {
@@ -42,16 +57,21 @@ export default function CartDrawer() {
     };
   });
 
-  const gst = Math.round(subtotal * 0.18);
-  const deliveryFee = deliveryMode === 'delivery' ? 149 : 0;
+  const gst = currency === 'USD' ? Math.round(subtotal * 0.08 * 100) / 100 : Math.round(subtotal * 0.18);
+  const deliveryFee = deliveryMode === 'delivery' ? (currency === 'USD' ? 9.99 : 149) : 0;
   const grandTotal = subtotal + deliveryFee;
 
   const handleCheckout = () => {
     const order = createOrder(deliveryMode);
     if (order) {
+      if (paymentMethod === 'khata' && isB2BApproved) {
+        giveKhataCredit(grandTotal, `Wholesale Order #${order.orderId}`, order.orderId);
+        showToast(`Order charged to Khata credit ledger! Available balance updated.`, 'success');
+      }
       setConfirmedOrder(order);
     }
   };
+
 
   return (
     <>
@@ -155,7 +175,7 @@ export default function CartDrawer() {
                       {item.variant} • {item.color}
                     </div>
                     <div className="text-xs font-extrabold text-[#0F172A] font-mono-tech mt-1">
-                      {formatCurrency(item.unitPrice)}
+                      {formatCurrency(item.unitPrice, currency)}
                     </div>
                   </div>
 
@@ -191,29 +211,76 @@ export default function CartDrawer() {
               ))
             )}
 
+            {/* B2B Wholesale Payment Method Selector */}
+            {cart.length > 0 && isB2BApproved && (
+              <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-3.5 space-y-2 text-xs">
+                <div className="font-bold text-blue-950 uppercase tracking-wider text-[11px]">
+                  Payment Terms (B2B Wholesale)
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('online')}
+                    className={`py-2 px-3 rounded-xl border text-xs font-semibold transition ${
+                      paymentMethod === 'online'
+                        ? 'bg-[#2563eb] text-white border-[#2563eb] shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    Pay Online / Card / Wire
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('khata')}
+                    className={`py-2 px-3 rounded-xl border text-xs font-semibold transition ${
+                      paymentMethod === 'khata'
+                        ? 'bg-[#2563eb] text-white border-[#2563eb] shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    Charge to Khata (Net-30)
+                  </button>
+                </div>
+                {paymentMethod === 'khata' && (
+                  <p className="text-[11px] text-blue-800">
+                    Order will be charged to your business credit limit. Ledger invoice generated automatically.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Bill Summary Breakdown */}
             {cart.length > 0 && (
               <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-3.5 space-y-2 text-xs">
-                <div className="font-bold text-[#0F172A] text-xs uppercase tracking-wider mb-1">
-                  Tax Invoice Breakdown
+                <div className="font-bold text-[#0F172A] text-xs uppercase tracking-wider mb-1 flex items-center justify-between">
+                  <span>Order Summary</span>
+                  {isB2BApproved && (
+                    <span className="text-[10px] text-[#2563eb] font-semibold">Wholesale Dealer Rate</span>
+                  )}
                 </div>
                 <div className="flex justify-between text-[#64748B]">
                   <span>Items Subtotal</span>
-                  <span className="font-mono-tech font-semibold text-[#0F172A]">{formatCurrency(subtotal)}</span>
+                  <span className="font-mono-tech font-semibold text-[#0F172A]">
+                    {formatCurrency(subtotal, currency)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-[#64748B]">
-                  <span>Estimated GST (18% Included)</span>
-                  <span className="font-mono-tech font-semibold text-[#0F172A]">{formatCurrency(gst)}</span>
+                  <span>Estimated Tax</span>
+                  <span className="font-mono-tech font-semibold text-[#0F172A]">
+                    {formatCurrency(gst, currency)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-[#64748B]">
                   <span>Delivery Charges</span>
                   <span className="font-mono-tech font-semibold text-emerald-600">
-                    {deliveryFee === 0 ? 'FREE (Counter Pickup)' : formatCurrency(deliveryFee)}
+                    {deliveryFee === 0 ? 'FREE' : formatCurrency(deliveryFee, currency)}
                   </span>
                 </div>
                 <div className="pt-2 border-t border-[#E2E8F0] flex justify-between font-extrabold text-[#0F172A] text-sm">
                   <span>Grand Total</span>
-                  <span className="text-base text-[#0076DF] font-mono-tech">{formatCurrency(grandTotal)}</span>
+                  <span className="text-base text-[#2563eb] font-mono-tech">
+                    {formatCurrency(grandTotal, currency)}
+                  </span>
                 </div>
               </div>
             )}
@@ -224,9 +291,13 @@ export default function CartDrawer() {
             <div className="p-4 bg-white border-t border-[#E2E8F0] shrink-0">
               <button
                 onClick={handleCheckout}
-                className="w-full h-[52px] rounded-xl bg-[#0076DF] hover:bg-[#005DB3] text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2 active:scale-[0.99] transition"
+                className="w-full h-[52px] rounded-xl bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 active:scale-[0.99] transition"
               >
-                <span>Proceed to {deliveryMode === 'pickup' ? 'Counter Pickup' : 'Express Delivery'}</span>
+                <span>
+                  {paymentMethod === 'khata'
+                    ? `Confirm & Charge to Khata (${formatCurrency(grandTotal, currency)})`
+                    : `Proceed to Checkout (${formatCurrency(grandTotal, currency)})`}
+                </span>
                 <ArrowRight size={18} />
               </button>
             </div>

@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useStore } from '@/lib/store/StoreContext';
-import { formatCurrency, maskIMEI } from '@/lib/utils/formatters';
-import { Layers, Plus, ScanBarcode, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
-import AddNewProductModal from './AddNewProductModal';
+import { formatCurrency } from '@/lib/utils/formatters';
+import { Layers, Plus, RotateCcw, Smartphone, Tag } from 'lucide-react';
 
 export default function InventoryManagerView() {
-  const { products, setIsAddNewProductOpen } = useStore();
+  const { products, setIsAddNewProductOpen, resetCatalog } = useStore();
 
   const totalSKUs = products.length;
   const totalStockUnits = products.reduce((acc, p) => acc + p.stockCount, 0);
@@ -17,7 +17,7 @@ export default function InventoryManagerView() {
       {/* Top Inventory Metrics */}
       <div className="bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0076DF] flex items-center justify-center font-bold">
               <Layers size={20} />
             </div>
@@ -30,13 +30,24 @@ export default function InventoryManagerView() {
           </div>
         </div>
 
-        <button
-          onClick={() => setIsAddNewProductOpen(true)}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0076DF] hover:bg-[#005DB3] text-white text-xs font-bold shadow-md transition"
-        >
-          <Plus size={16} />
-          <span>Register New SKU</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={resetCatalog}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
+            title="Reset catalog back to initial factory products"
+          >
+            <RotateCcw size={14} />
+            <span>Reset Defaults</span>
+          </button>
+
+          <button
+            onClick={() => setIsAddNewProductOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0076DF] hover:bg-[#005DB3] text-white text-xs font-bold shadow-md transition active:scale-95"
+          >
+            <Plus size={16} />
+            <span>Register New SKU</span>
+          </button>
+        </div>
       </div>
 
       {/* Product Stock Table */}
@@ -51,16 +62,38 @@ export default function InventoryManagerView() {
         <div className="divide-y divide-[#F1F5F9]">
           {products.map((prod) => (
             <div key={prod.id} className="p-4 space-y-2 hover:bg-[#F8FAFC] transition">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-extrabold text-sm text-[#0F172A]">{prod.title}</span>
-                    <span className="text-[10px] text-[#0076DF] font-bold bg-blue-50 px-2 py-0.2 rounded font-mono-tech">
-                      {prod.sku}
-                    </span>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  {/* Thumbnail */}
+                  <div className="relative w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                    {prod.imageUrl ? (
+                      <Image
+                        src={prod.imageUrl}
+                        alt={prod.title}
+                        fill
+                        sizes="48px"
+                        unoptimized={prod.imageUrl.startsWith('data:')}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <Smartphone size={20} className="text-slate-400" />
+                    )}
                   </div>
-                  <div className="text-xs text-[#64748B] mt-0.5">
-                    Category: {prod.category} • Warranty: {prod.warranty}
+
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-extrabold text-sm text-[#0F172A]">{prod.title}</span>
+                      <span className="text-[10px] text-[#0076DF] font-bold bg-blue-50 px-2 py-0.5 rounded font-mono-tech">
+                        {prod.sku}
+                      </span>
+                    </div>
+                    <div className="text-xs text-[#64748B] mt-0.5 flex items-center gap-2">
+                      <span className="capitalize">{prod.brand}</span>
+                      <span>•</span>
+                      <span className="capitalize">{prod.category}</span>
+                      <span>•</span>
+                      <span>{prod.warranty}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -68,7 +101,10 @@ export default function InventoryManagerView() {
                   <div className="text-xs font-extrabold text-[#0F172A] font-mono-tech">
                     {formatCurrency(prod.retailPrice)}
                   </div>
-                  <div className={`text-[11px] font-bold ${prod.stockCount <= 10 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  <div className="text-[10px] text-slate-400 font-mono-tech">
+                    B2B: {formatCurrency(prod.wholesalePrice)}
+                  </div>
+                  <div className={`text-[11px] font-bold mt-0.5 ${prod.stockCount <= 10 ? 'text-amber-600' : 'text-emerald-600'}`}>
                     ● {prod.stockCount} units in stock
                   </div>
                 </div>
@@ -76,9 +112,9 @@ export default function InventoryManagerView() {
 
               {/* IMEI Chips Drawer */}
               {prod.imeis && prod.imeis.length > 0 && (
-                <div className="pt-1">
+                <div className="pt-1 pl-15">
                   <div className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    Registered Serial Barcodes / IMEIs
+                    Registered Serial Barcodes / IMEIs ({prod.imeis.length})
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {prod.imeis.map((imei, idx) => (
@@ -97,9 +133,6 @@ export default function InventoryManagerView() {
           ))}
         </div>
       </div>
-
-      {/* Modal */}
-      <AddNewProductModal />
     </div>
   );
 }

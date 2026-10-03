@@ -28,7 +28,7 @@ export default function StitchProductDetailView() {
     setSelectedProduct,
     setIsProductDetailOpen,
     addToCart,
-    setTab,
+    setIsCartOpen,
     showToast
   } = useStore();
 
@@ -50,13 +50,14 @@ export default function StitchProductDetailView() {
 
   const handleAddToCart = () => {
     addToCart(selectedProduct.id, `${selectedStorage} Storage`, selectedColor, 1);
-    showToast('Added OnePlus 12 5G to your Bag!', 'success');
+    showToast(`Added ${selectedProduct.title} to your Bag!`, 'success');
   };
 
   const handleBuyNow = () => {
     addToCart(selectedProduct.id, `${selectedStorage} Storage`, selectedColor, 1);
-    setTab('orders'); // takes to checkout flow
     setIsProductDetailOpen(false);
+    setIsCartOpen(true);
+    showToast(`Added ${selectedProduct.title} to your Bag!`, 'success');
   };
 
   return (
@@ -113,6 +114,7 @@ export default function StitchProductDetailView() {
             fill
             sizes="(max-width: 640px) 100vw, 384px"
             priority
+            unoptimized={Boolean(selectedProduct.imageUrl?.startsWith('data:'))}
             className="object-cover"
           />
           <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">

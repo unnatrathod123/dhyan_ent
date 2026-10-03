@@ -1,0 +1,301 @@
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { useStore } from '@/lib/store/StoreContext';
+
+import { Product } from '@/lib/types';
+import TechHubHeader from '@/components/common/TechHubHeader';
+import TechHubHero from '@/components/storefront/TechHubHero';
+import TechHubBrandRow from '@/components/storefront/TechHubBrandRow';
+import TechHubFeaturedDeals from '@/components/storefront/TechHubFeaturedDeals';
+import TechHubProductDetailModal from '@/components/storefront/TechHubProductDetailModal';
+import TechHubAuthModal from '@/components/auth/TechHubAuthModal';
+import TechHubB2BPortal from '@/components/b2b/TechHubB2BPortal';
+import CartDrawer from '@/components/cart/CartDrawer';
+import ToastContainer from '@/components/common/ToastContainer';
+import { Sparkles, Layers, ShieldCheck, ArrowRight, Building2, Package } from 'lucide-react';
+
+export default function TechHubMainView() {
+  const {
+    products,
+    searchQuery,
+    setSearchQuery,
+    currentUser,
+    currentRole,
+    setRole,
+    setIsAuthModalOpen,
+    setAuthModalTab
+  } = useStore();
+
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeBrand, setActiveBrand] = useState<string>('All');
+  const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null);
+  const [viewMode, setViewMode] = useState<'storefront' | 'b2b_portal'>('storefront');
+
+  // Filter products based on search, category, and brand
+  const filteredProducts = products.filter((p) => {
+    // 1. Category Filter
+    if (activeCategory !== 'all') {
+      if (activeCategory === 'phones' && p.category !== 'phones' && p.category !== 'smartphones') return false;
+      if (activeCategory === 'cables' && p.category !== 'cables') return false;
+      if (activeCategory === 'chargers' && p.category !== 'chargers') return false;
+      if (activeCategory === 'spare_parts' && p.category !== 'spare_parts') return false;
+    }
+
+    // 2. Brand Filter
+    if (activeBrand !== 'All' && p.brand.toLowerCase() !== activeBrand.toLowerCase()) {
+      return false;
+    }
+
+    // 3. Search Query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchTitle = p.title.toLowerCase().includes(q);
+      const matchBrand = p.brand.toLowerCase().includes(q);
+      const matchCategory = p.category.toLowerCase().includes(q);
+      const matchSku = p.sku.toLowerCase().includes(q);
+      if (!matchTitle && !matchBrand && !matchCategory && !matchSku) return false;
+    }
+
+    return true;
+  });
+
+  // Featured 4 Deals from the screenshot (DuraLink cable, SwiftPort charger, iPhone screen, MagBoost powerbank)
+  const featuredDealProducts = products.filter((p) =>
+    ['prod_duralink_cable', 'prod_swiftport_charger', 'prod_ip13_screen', 'prod_magboost_powerbank'].includes(
+      p.id
+    )
+  );
+
+  const handleShopAllCategories = () => {
+    setActiveCategory('all');
+    setActiveBrand('All');
+    const el = document.getElementById('catalog-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleFindYourPart = () => {
+    setActiveCategory('spare_parts');
+    const el = document.getElementById('catalog-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased flex flex-col selection:bg-blue-100 selection:text-blue-900">
+      {/* 1. Header matching screenshot */}
+      <TechHubHeader
+        activeCategory={activeCategory}
+        onSelectCategory={(cat) => {
+          setViewMode('storefront');
+          setActiveCategory(cat);
+          const el = document.getElementById('catalog-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
+      />
+
+      {/* Mode Sub-navigation: Storefront vs B2B Wholesale Portal */}
+      <div className="bg-slate-50 border-b border-slate-200/60 py-2 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              onClick={() => setViewMode('storefront')}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+                viewMode === 'storefront'
+                  ? 'bg-white text-[#2563eb] shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Marketplace Storefront
+            </button>
+
+            <button
+              onClick={() => setViewMode('b2b_portal')}
+              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${
+                viewMode === 'b2b_portal'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              <Building2 size={13} />
+              <span>B2B Wholesale Hub</span>
+            </button>
+          </div>
+
+          <div className="text-[11px] text-slate-500 hidden sm:flex items-center gap-2">
+            <span>Customer Persona:</span>
+            <span className="font-bold text-slate-800">
+              {currentUser
+                ? currentUser.role === 'b2b'
+                  ? currentUser.b2bStatus === 'approved'
+                    ? '🏢 Wholesale Dealer (Verified)'
+                    : '⏳ Wholesale Review Pending'
+                  : '👤 Personal Shopper (B2C)'
+                : 'Guest Visitor (Redirects to Register on Add to Cart)'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="flex-1">
+        {viewMode === 'b2b_portal' ? (
+          <TechHubB2BPortal />
+        ) : (
+          <>
+            {/* 2. Hero Section matching screenshot */}
+            <TechHubHero
+              onShopAllCategories={handleShopAllCategories}
+              onFindYourPart={handleFindYourPart}
+            />
+
+            {/* 3. Shop by Brand Row matching screenshot */}
+            <TechHubBrandRow
+              activeBrand={activeBrand}
+              onSelectBrand={(brand) => {
+                setActiveBrand(brand);
+                const el = document.getElementById('catalog-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
+
+            {/* 4. Featured Deals (The 4 exact cards from screenshot) */}
+            {activeBrand === 'All' && activeCategory === 'all' && !searchQuery && (
+              <TechHubFeaturedDeals
+                products={featuredDealProducts}
+                onOpenProductDetail={(prod) => setSelectedModalProduct(prod)}
+              />
+            )}
+
+            {/* 5. Complete Catalog Grid */}
+            <section id="catalog-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                    {activeCategory !== 'all'
+                      ? `${activeCategory.replace('_', ' ').toUpperCase()} Catalog`
+                      : activeBrand !== 'All'
+                      ? `${activeBrand} Hardware & Accessories`
+                      : 'All Products & Components'}
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Showing {filteredProducts.length} verified authentic products
+                  </p>
+                </div>
+
+                {/* Filter tags */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {['all', 'phones', 'cables', 'chargers', 'spare_parts', 'accessories'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium capitalize border transition ${
+                        activeCategory === cat
+                          ? 'bg-[#2563eb] text-white border-[#2563eb]'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      {cat.replace('_', ' ')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Product Deals Grid */}
+              <TechHubFeaturedDeals
+                products={filteredProducts}
+                onOpenProductDetail={(prod) => setSelectedModalProduct(prod)}
+              />
+            </section>
+          </>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-400 text-xs py-12 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div className="relative h-9 w-36 mb-3 brightness-0 invert opacity-90">
+              <Image
+                src="/Dhyan_Logo.png"
+                alt="Dhyan Enterprise"
+                fill
+                sizes="144px"
+                className="object-contain object-left"
+              />
+            </div>
+            <p className="mt-3 text-slate-400 leading-relaxed text-xs">
+
+              Your one-stop tech marketplace for flagship smartphones, GaN charging adapters, military-grade cables, and certified OEM spare parts.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Customer Portals</h4>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => {
+                    setAuthModalTab('register');
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="hover:text-white transition"
+                >
+                  Personal Shopper Account (B2C)
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    setViewMode('b2b_portal');
+                  }}
+                  className="hover:text-white transition"
+                >
+                  Wholesale Dealer Network (B2B)
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    setViewMode('b2b_portal');
+                  }}
+                  className="hover:text-white transition"
+                >
+                  Khata Net-30 Credit Line
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Categories</h4>
+            <ul className="space-y-2">
+              <li><button onClick={() => setActiveCategory('phones')} className="hover:text-white transition">Smartphones & Flagships</button></li>
+              <li><button onClick={() => setActiveCategory('cables')} className="hover:text-white transition">Braided Cables & Adapters</button></li>
+              <li><button onClick={() => setActiveCategory('chargers')} className="hover:text-white transition">GaN Fast Wall Chargers</button></li>
+              <li><button onClick={() => setActiveCategory('spare_parts')} className="hover:text-white transition">OLED Displays & Spare Parts</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Direct Support</h4>
+            <p className="text-slate-400">Desk #02, Flagship Station Road Hub</p>
+            <p className="text-slate-400 mt-1">support@techhub.me • Mon - Sat 9AM - 8PM</p>
+            <div className="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-500">
+              © 2026 TechHub & Dhyan Enterprise. All rights reserved.
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Modals & Overlays */}
+      <TechHubAuthModal />
+      <TechHubProductDetailModal
+        product={selectedModalProduct}
+        onClose={() => setSelectedModalProduct(null)}
+      />
+      <CartDrawer />
+      <ToastContainer />
+    </div>
+  );
+}

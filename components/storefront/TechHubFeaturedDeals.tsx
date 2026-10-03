@@ -1,0 +1,170 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import { Product } from '@/lib/types';
+import { useStore } from '@/lib/store/StoreContext';
+import { formatCurrency, formatProductPrice } from '@/lib/utils/formatters';
+import { ShoppingCart, Star, ShieldCheck, Building2, Eye, Tag } from 'lucide-react';
+
+interface TechHubFeaturedDealsProps {
+  products: Product[];
+  onOpenProductDetail: (product: Product) => void;
+}
+
+export default function TechHubFeaturedDeals({
+  products,
+  onOpenProductDetail
+}: TechHubFeaturedDealsProps) {
+  const { currentUser, currency, addToCart } = useStore();
+
+  const isB2BApproved = currentUser?.role === 'b2b' && currentUser.b2bStatus === 'approved';
+  const isB2BPending = currentUser?.role === 'b2b' && currentUser.b2bStatus === 'pending';
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Featured Deals</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Handpicked premium tech hardware & essential spare parts</p>
+        </div>
+
+        {/* Persona Price Indicator */}
+        <div className="flex items-center gap-2">
+          {isB2BApproved ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#2563eb] border border-blue-200">
+              <Building2 size={13} />
+              <span>Wholesale Bulk Pricing Active</span>
+            </span>
+          ) : isB2BPending ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+              <span>Retail Mode • B2B Review Pending</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+              <Tag size={13} />
+              <span>Personal Shopper (B2C)</span>
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* 4-Column Product Grid Matching Screenshot */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {products.map((product) => {
+          // Calculate active price based on persona with safe fallback
+          const regularPrice =
+            (currency === 'USD'
+              ? product.retailPriceUSD ?? Math.round(product.retailPrice / 83)
+              : product.retailPrice) || 0;
+
+          const wholesalePrice =
+            (currency === 'USD'
+              ? product.wholesalePriceUSD ?? Math.round(product.wholesalePrice / 83)
+              : product.wholesalePrice) || 0;
+
+          const activePrice = isB2BApproved ? wholesalePrice : regularPrice;
+
+          // Discount percent if B2B approved
+          const wholesaleSavings =
+            isB2BApproved && regularPrice > activePrice
+              ? Math.round(((regularPrice - activePrice) / regularPrice) * 100)
+              : null;
+
+          const defaultVariant = product.variants[0] || 'Standard';
+          const defaultColor = product.colors[0]?.name || 'Standard';
+          const addQty = isB2BApproved ? product.moq || 5 : 1;
+
+
+          return (
+            <div
+              key={product.id}
+              onClick={() => onOpenProductDetail(product)}
+              className="bg-white rounded-2xl border border-slate-100 p-5 shadow-xs hover:shadow-xl hover:border-slate-200 transition-all duration-200 cursor-pointer flex flex-col justify-between group"
+            >
+              {/* Product Visual Area */}
+              <div>
+                <div className="relative w-full aspect-square mb-4 rounded-xl overflow-hidden bg-white flex items-center justify-center p-2">
+                  {product.imageUrl ? (
+                    <div className="relative w-full h-full transform group-hover:scale-105 transition-transform duration-300">
+                      <Image
+                        src={product.imageUrl}
+                        alt={product.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
+                      No Image
+                    </div>
+                  )}
+
+                  {/* Wholesale Savings Tag */}
+                  {isB2BApproved && wholesaleSavings && (
+                    <div className="absolute top-2 left-2 bg-[#2563eb] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
+                      Save {wholesaleSavings}%
+                    </div>
+                  )}
+
+                  {/* Quick preview hover button */}
+                  <div className="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                    <span className="bg-white text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+                      <Eye size={13} />
+                      View Details
+                    </span>
+                  </div>
+                </div>
+
+                {/* Product Title */}
+                <h3 className="font-semibold text-slate-900 text-sm tracking-tight line-clamp-1 group-hover:text-[#2563eb] transition">
+                  {product.title}
+                </h3>
+
+                {/* Subtitle / Variant Tag matching screenshot */}
+                <p className="text-xs text-slate-400 font-normal mt-0.5 mb-2">
+                  {product.subtitle || product.brand}
+                </p>
+
+                {/* Price Display */}
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-base font-bold text-slate-900">
+                    {formatCurrency(activePrice, currency)}
+                  </span>
+
+                  {isB2BApproved && (
+                    <span className="text-xs text-slate-400 line-through">
+                      {formatCurrency(regularPrice, currency)}
+                    </span>
+                  )}
+
+                  {isB2BApproved && (
+                    <span className="text-[11px] text-[#2563eb] font-semibold ml-auto">
+                      MOQ: {product.moq || 5}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Full-width "Add to Cart" Button (matching screenshot) */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart(product.id, defaultVariant, defaultColor, addQty);
+                }}
+                className="w-full bg-[#2563eb] hover:bg-blue-700 active:scale-98 text-white font-medium text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors duration-150 flex items-center justify-center gap-2"
+              >
+                <ShoppingCart size={16} />
+                <span>
+                  {isB2BApproved ? `Add to Cart (${addQty} MOQ)` : 'Add to Cart'}
+                </span>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}

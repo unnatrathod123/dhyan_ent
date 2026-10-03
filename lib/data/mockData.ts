@@ -2,13 +2,165 @@ import { Product, KhataTransaction, KhataCustomer, CashierShift, Order, Warranty
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
+    id: 'prod_duralink_cable',
+    sku: 'ANK-DUR-CBL',
+    title: 'DuraLink Braided Cable',
+    brand: 'Anker',
+    category: 'cables',
+    subtitle: 'Navy',
+    retailPrice: 1299,
+    wholesalePrice: 699,
+    retailPriceUSD: 15.99,
+    wholesalePriceUSD: 8.5,
+    mrp: 1999,
+    discount: '-35% OFF',
+    rating: 4.9,
+    reviewsCount: 1420,
+    stockCount: 150,
+    warranty: '2 Year Anker Warranty',
+    description: 'Ultra-durable nylon braided USB-C to USB-C cable tested to withstand 30,000+ bends. Supports 100W PD fast charging.',
+    imageUrl: '/images/duralink_cable.jpg',
+    specs: {
+      powerOutput: '100W Max (20V/5A)',
+      material: 'Double-braided Nylon & Aluminum Connectors',
+      compatibility: 'Universal USB-C laptops, tablets, smartphones',
+      warrantyPeriod: '24 Months Replacement'
+    },
+    variants: ['1.8m (6ft) • Navy', '1.0m (3.3ft) • Navy', '2.0m (6.6ft) • Black'],
+    colors: [
+      { name: 'Navy', hex: '#1e3a5f' },
+      { name: 'Space Gray', hex: '#4b5563' }
+    ],
+    imeis: [],
+    moq: 10,
+    volumeTiers: [
+      { minQty: 10, maxQty: 49, priceUSD: 8.5, priceINR: 699 },
+      { minQty: 50, maxQty: 99, priceUSD: 7.2, priceINR: 599 },
+      { minQty: 100, priceUSD: 5.99, priceINR: 499 }
+    ]
+  },
+  {
+    id: 'prod_swiftport_charger',
+    sku: 'TH-SWF-GAN',
+    title: 'SwiftPort GaN Charger',
+    brand: 'TechHub',
+    category: 'chargers',
+    subtitle: 'White',
+    retailPrice: 3499,
+    wholesalePrice: 1899,
+    retailPriceUSD: 45.99,
+    wholesalePriceUSD: 24.0,
+    mrp: 4999,
+    discount: '-30% OFF',
+    rating: 4.8,
+    reviewsCount: 890,
+    stockCount: 85,
+    warranty: '18 Months Replacement Warranty',
+    description: 'Next-gen GaNFast technology dual port charger. Super compact foldable prongs with intelligent dynamic power distribution.',
+    imageUrl: '/images/swiftport_charger.jpg',
+    specs: {
+      powerOutput: '65W Max GaNFast Architecture',
+      material: 'Flame-retardant PC Material',
+      compatibility: 'MacBook, iPhone 15/16, Samsung Galaxy, SteamDeck',
+      warrantyPeriod: '18 Months'
+    },
+    variants: ['65W Dual Port (USB-C + USB-A)', '100W Triple Port'],
+    colors: [
+      { name: 'Pure White', hex: '#ffffff' },
+      { name: 'Matte Black', hex: '#18181b' }
+    ],
+    imeis: [],
+    moq: 5,
+    volumeTiers: [
+      { minQty: 5, maxQty: 19, priceUSD: 24.0, priceINR: 1899 },
+      { minQty: 20, maxQty: 49, priceUSD: 21.5, priceINR: 1699 },
+      { minQty: 50, priceUSD: 18.0, priceINR: 1450 }
+    ]
+  },
+  {
+    id: 'prod_ip13_screen',
+    sku: 'APL-SCR-13P',
+    title: 'iPhone 13 Pro Screen Assembly',
+    brand: 'Apple',
+    category: 'spare_parts',
+    subtitle: 'Screen',
+    retailPrice: 15999,
+    wholesalePrice: 9999,
+    retailPriceUSD: 189.0,
+    wholesalePriceUSD: 119.0,
+    mrp: 22999,
+    discount: '-30% OFF',
+    rating: 4.7,
+    reviewsCount: 312,
+    stockCount: 40,
+    warranty: '6 Months TechHub Warranty',
+    description: 'OEM grade 120Hz ProMotion Super Retina XDR OLED replacement display. TrueTone and 3D Touch IC programmable.',
+    imageUrl: '/images/screen_assembly.jpg',
+    specs: {
+      display: '6.1" Super Retina XDR OLED 120Hz ProMotion',
+      material: 'Ceramic Shield Glass with Oleophobic coating',
+      compatibility: 'iPhone 13 Pro (Models A2638, A2483, A2636, A2639)',
+      warrantyPeriod: '6 Months Direct Replacement'
+    },
+    variants: ['OEM Grade OLED (Full Assembly)', 'Aftermarket Incell (Budget)'],
+    colors: [{ name: 'Screen Assembly', hex: '#10b981' }],
+    imeis: [],
+    moq: 3,
+    volumeTiers: [
+      { minQty: 3, maxQty: 9, priceUSD: 119.0, priceINR: 9999 },
+      { minQty: 10, maxQty: 24, priceUSD: 105.0, priceINR: 8800 },
+      { minQty: 25, priceUSD: 95.0, priceINR: 7900 }
+    ]
+  },
+  {
+    id: 'prod_magboost_powerbank',
+    sku: 'BLK-MAG-PB',
+    title: 'MagBoost Power Bank',
+    brand: 'Belkin',
+    category: 'accessories',
+    subtitle: 'Gray',
+    retailPrice: 5499,
+    wholesalePrice: 3199,
+    retailPriceUSD: 69.99,
+    wholesalePriceUSD: 39.5,
+    mrp: 7999,
+    discount: '-31% OFF',
+    rating: 4.8,
+    reviewsCount: 760,
+    stockCount: 60,
+    warranty: '1 Year Belkin Warranty',
+    description: 'Slimline magnetic wireless power pack with built-in kickstand. Snap-and-charge convenience with 15W Qi2 wireless output.',
+    imageUrl: '/images/magboost_powerbank.jpg',
+    specs: {
+      battery: '10,000 mAh Li-Polymer with LED Fuel Gauge',
+      powerOutput: '15W Wireless Qi2 + 20W PD USB-C In/Out',
+      material: 'Anodized Aluminum & Soft-touch Silicone',
+      warrantyPeriod: '12 Months'
+    },
+    variants: ['10,000 mAh Slim', '5,000 mAh Ultra-Thin'],
+    colors: [
+      { name: 'Gray', hex: '#6b7280' },
+      { name: 'Midnight', hex: '#0f172a' }
+    ],
+    imeis: [],
+    moq: 5,
+    volumeTiers: [
+      { minQty: 5, maxQty: 19, priceUSD: 39.5, priceINR: 3199 },
+      { minQty: 20, maxQty: 49, priceUSD: 34.0, priceINR: 2750 },
+      { minQty: 50, priceUSD: 29.99, priceINR: 2450 }
+    ]
+  },
+  {
     id: 'prod_s24u',
     sku: 'SAM-S24U-TI',
     title: 'Galaxy S24 Ultra',
     brand: 'Samsung',
-    category: 'smartphones',
+    category: 'phones',
+    subtitle: 'Titanium',
     retailPrice: 106999,
     wholesalePrice: 98500,
+    retailPriceUSD: 1199.0,
+    wholesalePriceUSD: 999.0,
     mrp: 124999,
     discount: '-16% OFF',
     rating: 4.8,
@@ -28,16 +180,24 @@ export const INITIAL_PRODUCTS: Product[] = [
       { name: 'Titanium Gray', hex: '#636569' },
       { name: 'Titanium Black', hex: '#212121' }
     ],
-    imeis: ['352904812398701', '352904812398702', '352904812398703']
+    imeis: ['352904812398701', '352904812398702', '352904812398703'],
+    moq: 2,
+    volumeTiers: [
+      { minQty: 2, maxQty: 4, priceUSD: 999.0, priceINR: 98500 },
+      { minQty: 5, priceUSD: 949.0, priceINR: 94500 }
+    ]
   },
   {
     id: 'prod_ip15p',
     sku: 'APL-IP15P-NT',
     title: 'iPhone 15 Pro',
     brand: 'Apple',
-    category: 'smartphones',
+    category: 'phones',
+    subtitle: 'Natural Titanium',
     retailPrice: 130990,
     wholesalePrice: 122500,
+    retailPriceUSD: 999.0,
+    wholesalePriceUSD: 899.0,
     mrp: 144990,
     discount: '-12% OFF',
     rating: 4.9,
@@ -57,16 +217,24 @@ export const INITIAL_PRODUCTS: Product[] = [
       { name: 'Natural Titanium', hex: '#9e978e' },
       { name: 'Black Titanium', hex: '#232220' }
     ],
-    imeis: ['359281098765401', '359281098765402', '359281098765403']
+    imeis: ['359281098765401', '359281098765402', '359281098765403'],
+    moq: 2,
+    volumeTiers: [
+      { minQty: 2, maxQty: 4, priceUSD: 899.0, priceINR: 122500 },
+      { minQty: 5, priceUSD: 869.0, priceINR: 119000 }
+    ]
   },
   {
     id: 'prod_op12',
     sku: 'OP12-512G-GRN',
     title: 'OnePlus 12 5G',
     brand: 'OnePlus',
-    category: 'smartphones',
+    category: 'phones',
+    subtitle: 'Flowy Emerald',
     retailPrice: 58499,
     wholesalePrice: 54900,
+    retailPriceUSD: 799.0,
+    wholesalePriceUSD: 699.0,
     mrp: 69999,
     discount: '-18% OFF',
     rating: 4.7,
@@ -91,16 +259,24 @@ export const INITIAL_PRODUCTS: Product[] = [
       { name: 'Silky Black', hex: '#18181b' },
       { name: 'Glacial White', hex: '#f1f5f9' }
     ],
-    imeis: ['864920061234501', '864920061234502', '864920061234503', '864920061234504', '864920061234505']
+    imeis: ['864920061234501', '864920061234502', '864920061234503'],
+    moq: 2,
+    volumeTiers: [
+      { minQty: 2, maxQty: 4, priceUSD: 699.0, priceINR: 54900 },
+      { minQty: 5, priceUSD: 669.0, priceINR: 52900 }
+    ]
   },
   {
     id: 'prod_redmi13p',
     sku: 'XIA-RN13P-PUR',
     title: 'Redmi Note 13 Pro',
     brand: 'Xiaomi',
-    category: 'smartphones',
+    category: 'phones',
+    subtitle: 'Coral Purple',
     retailPrice: 23499,
     wholesalePrice: 20900,
+    retailPriceUSD: 299.0,
+    wholesalePriceUSD: 249.0,
     mrp: 28999,
     discount: '-24% OFF',
     rating: 4.5,
@@ -120,16 +296,24 @@ export const INITIAL_PRODUCTS: Product[] = [
       { name: 'Coral Purple', hex: '#b8a9c9' },
       { name: 'Midnight Black', hex: '#1e293b' }
     ],
-    imeis: ['869102938475601', '869102938475602']
+    imeis: ['869102938475601', '869102938475602'],
+    moq: 3,
+    volumeTiers: [
+      { minQty: 3, maxQty: 5, priceUSD: 249.0, priceINR: 20900 },
+      { minQty: 6, priceUSD: 235.0, priceINR: 19800 }
+    ]
   },
   {
     id: 'prod_anker80w',
     sku: 'ANK-80W-DUAL',
     title: 'Anker 80W Dual USB-C Fast Charger',
-    brand: 'Accessories',
+    brand: 'Anker',
     category: 'chargers',
+    subtitle: 'White',
     retailPrice: 1799,
     wholesalePrice: 1350,
+    retailPriceUSD: 39.99,
+    wholesalePriceUSD: 22.5,
     mrp: 2499,
     discount: '-28% OFF',
     rating: 4.9,
@@ -137,24 +321,33 @@ export const INITIAL_PRODUCTS: Product[] = [
     stockCount: 32,
     warranty: '18 Months Warranty',
     description: 'GaN III technology dual port ultra fast charging for laptops, tablets, and phones.',
+    imageUrl: '/images/swiftport_charger.jpg',
     specs: {
-      processor: 'GaN III IC',
-      battery: '80W Max Power Delivery',
-      camera: 'ActiveShield 2.0 Temperature Monitor',
-      display: 'Dual Port Smart Distribution'
+      powerOutput: '80W Max Power Delivery',
+      material: 'GaN III IC Heat Dissipating',
+      compatibility: 'Laptops, Tablets, Smartphones',
+      warrantyPeriod: '18 Months'
     },
     variants: ['80W Dual Port'],
     colors: [{ name: 'Pure White', hex: '#ffffff' }],
-    imeis: ['SN-ANK80W-01', 'SN-ANK80W-02']
+    imeis: ['SN-ANK80W-01', 'SN-ANK80W-02'],
+    moq: 5,
+    volumeTiers: [
+      { minQty: 5, maxQty: 19, priceUSD: 22.5, priceINR: 1350 },
+      { minQty: 20, priceUSD: 19.99, priceINR: 1199 }
+    ]
   },
   {
     id: 'prod_spigen_mag',
     sku: 'SPG-MAG-10K',
     title: 'Spigen Power 10000mAh MagPack Slim',
     brand: 'Accessories',
-    category: 'chargers',
+    category: 'accessories',
+    subtitle: 'Black',
     retailPrice: 2200,
     wholesalePrice: 1650,
+    retailPriceUSD: 49.99,
+    wholesalePriceUSD: 28.0,
     mrp: 3499,
     discount: '-37% OFF',
     rating: 4.8,
@@ -162,15 +355,21 @@ export const INITIAL_PRODUCTS: Product[] = [
     stockCount: 25,
     warranty: '1 Year Warranty',
     description: 'Magnetic wireless charging powerbank with 20W PD USB-C in/out and kickstand.',
+    imageUrl: '/images/magboost_powerbank.jpg',
     specs: {
-      processor: 'MagSafe Compatible Smart Coil',
       battery: '10000 mAh Li-Polymer',
-      camera: 'Overcharge & Heat Protection',
-      display: 'LED Battery Indicator'
+      powerOutput: '15W Wireless + 20W PD',
+      material: 'Impact Resistant Polycarbonate',
+      warrantyPeriod: '1 Year'
     },
     variants: ['10000mAh Slim'],
     colors: [{ name: 'Deep Black', hex: '#0f172a' }],
-    imeis: ['SN-SPG10K-01']
+    imeis: ['SN-SPG10K-01'],
+    moq: 5,
+    volumeTiers: [
+      { minQty: 5, maxQty: 19, priceUSD: 28.0, priceINR: 1650 },
+      { minQty: 20, priceUSD: 24.5, priceINR: 1450 }
+    ]
   }
 ];
 

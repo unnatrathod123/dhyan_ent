@@ -13,7 +13,11 @@ import {
   WarrantyClaim,
   AppRole,
   AppTab,
-  ViewportMode
+  ViewportMode,
+  UserAccount,
+  Currency,
+  PendingCartItem,
+  B2BApprovalStatus
 } from '../types';
 import {
   INITIAL_PRODUCTS,
@@ -59,7 +63,33 @@ interface StoreContextType {
   lastGeneratedBill: POSBill | null;
   toasts: ToastItem[];
 
+  // Auth & Dual Persona State
+  currentUser: UserAccount | null;
+  pendingCartItem: PendingCartItem | null;
+  currency: Currency;
+  isAuthModalOpen: boolean;
+  authModalTab: 'login' | 'register';
+
+
   // Setters & Actions
+  setCurrency: (c: Currency) => void;
+  setIsAuthModalOpen: (open: boolean) => void;
+  setAuthModalTab: (tab: 'login' | 'register') => void;
+  registerUser: (userData: {
+    fullName: string;
+    email: string;
+    phone: string;
+    role: 'b2c' | 'b2b';
+    businessName?: string;
+    gstin?: string;
+    businessType?: 'retailer' | 'repair_shop' | 'wholesaler' | 'corporate';
+    address?: string;
+    city?: string;
+    pincode?: string;
+  }) => void;
+  loginUser: (emailOrPhone: string, asRole?: 'b2c' | 'b2b') => void;
+  toggleB2BApproval: () => void;
+  logoutUser: () => void;
   setRole: (role: AppRole) => void;
   setTab: (tab: AppTab) => void;
   setViewport: (mode: ViewportMode) => void;
@@ -94,6 +124,7 @@ interface StoreContextType {
 
   // Inventory & Orders
   addNewProduct: (product: Product) => void;
+  resetCatalog: () => void;
   createOrder: (deliveryMode: 'pickup' | 'delivery', hub?: string) => Order | null;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
   submitWarrantyClaim: (imei: string, description: string) => WarrantyClaim | null;
@@ -153,14 +184,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState<boolean>(false);
   const [lastGeneratedBill, setLastGeneratedBill] = useState<POSBill | null>(null);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+
+  // Auth & Dual-Persona States
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+  const [pendingCartItem, setPendingCartItem] = useState<PendingCartItem | null>(null);
+  const [currency, setCurrency] = useState<Currency>('USD');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('register');
 
   // Load from LocalStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const saved = localStorage.getItem('techhub_dhyan_state_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.products) setProducts(parsed.products);
+        if (parsed.products && Array.isArray(parsed.products) && parsed.products.length > 0) {
+          const existingIds = new Set(parsed.products.map((p: any) => p.id));
+          const missing = INITIAL_PRODUCTS.filter((p) => !existingIds.has(p.id));
+          setProducts([...parsed.products, ...missing]);
+        }
+        if (parsed.currentUser) setCurrentUser(parsed.currentUser);
+        if (parsed.currency) setCurrency(parsed.currency);
         if (parsed.cart) setCart(parsed.cart);
         if (parsed.posCart) setPosCart(parsed.posCart);
         if (parsed.khataCustomer) setKhataCustomer(parsed.khataCustomer);
@@ -172,14 +217,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       // ignore
+    } finally {
+      setIsHydrated(true);
     }
   }, []);
 
   // Save changes to LocalStorage
   useEffect(() => {
+    if (!isHydrated) return;
     try {
       const toSave = {
         products,
+        currentUser,
+        currency,
         cart,
         posCart,
         khataCustomer,
@@ -189,11 +239,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         warrantyClaims,
         offlineQueue
       };
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toSave));
+      localStorage.setItem('techhub_dhyan_state_v2', JSON.stringify(toSave));
     } catch {
       // ignore
     }
-  }, [products, cart, posCart, khataCustomer, ledger, cashierShift, orders, warrantyClaims, offlineQueue]);
+  }, [isHydrated, products, currentUser, currency, cart, posCart, khataCustomer, ledger, cashierShift, orders, warrantyClaims, offlineQueue]);
 
   const showToast = (message: string, type: 'normal' | 'success' | 'warning' | 'error' = 'normal') => {
     const id = 'toast_' + Date.now() + Math.random().toString().slice(2, 6);
@@ -205,6 +255,102 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const registerUser = (userData: {
+    fullName: string;
+    email: string;
+    phone: string;
+    role: 'b2c' | 'b2b';
+    businessName?: string;
+    gstin?: string;
+    businessType?: 'retailer' | 'repair_shop' | 'wholesaler' | 'corporate';
+    address?: string;
+    city?: string;
+    pincode?: string;
+  }) => {
+    const isB2B = userData.role === 'b2b';
+    const newUser: UserAccount = {
+      id: 'usr_' + Date.now(),
+      fullName: userData.fullName,
+      email: userData.email,
+      phone: userData.phone,
+      role: userData.role,
+      b2bStatus: isB2B ? 'pending' : 'none',
+      businessName: userData.businessName,
+      gstin: userData.gstin,
+      businessType: userData.businessType,
+      address: userData.address,
+      city: userData.city,
+      pincode: userData.pincode,
+      creditLimit: isB2B ? 50000 : 0,
+      usedCredit: 0,
+      registeredAt: new Date().toLocaleDateString()
+    };
+    setCurrentUser(newUser);
+    setCurrentRole(userData.role);
+    setIsAuthModalOpen(false);
+
+    if (isB2B) {
+      showToast('Registration submitted! B2B Wholesale account is under Admin Review.', 'warning');
+    } else {
+      showToast(`Welcome ${userData.fullName}! Your personal account is ready.`, 'success');
+    }
+
+    if (pendingCartItem) {
+      setCart((prev) => [...prev, { ...pendingCartItem }]);
+      showToast('Saved product automatically added to your cart!', 'success');
+      setPendingCartItem(null);
+      setIsCartOpen(true);
+    }
+  };
+
+  const loginUser = (emailOrPhone: string, asRole: 'b2c' | 'b2b' = 'b2c') => {
+    const isB2B = asRole === 'b2b';
+    const loggedUser: UserAccount = {
+      id: 'usr_' + Date.now(),
+      fullName: isB2B ? 'Apex Electronics Store' : 'Alex Johnson',
+      email: emailOrPhone.includes('@') ? emailOrPhone : 'shopper@techhub.me',
+      phone: emailOrPhone.includes('@') ? '9876543210' : emailOrPhone,
+      role: asRole,
+      b2bStatus: isB2B ? 'approved' : 'none',
+      businessName: isB2B ? 'Apex Electronics Store LLC' : undefined,
+      gstin: isB2B ? '24AAACD1234F1Z5' : undefined,
+      creditLimit: isB2B ? 200000 : 0,
+      usedCredit: 0,
+      registeredAt: 'Oct 2026'
+    };
+    setCurrentUser(loggedUser);
+    setCurrentRole(asRole);
+    setIsAuthModalOpen(false);
+    showToast(`Welcome back, ${loggedUser.fullName}!`, 'success');
+
+    if (pendingCartItem) {
+      setCart((prev) => [...prev, { ...pendingCartItem }]);
+      showToast('Saved product automatically added to your cart!', 'success');
+      setPendingCartItem(null);
+      setIsCartOpen(true);
+    }
+  };
+
+  const toggleB2BApproval = () => {
+    if (!currentUser || currentUser.role !== 'b2b') return;
+    const nextStatus: B2BApprovalStatus = currentUser.b2bStatus === 'approved' ? 'pending' : 'approved';
+    setCurrentUser({
+      ...currentUser,
+      b2bStatus: nextStatus
+    });
+    if (nextStatus === 'approved') {
+      showToast('Admin Simulation: Wholesale Dealer APPROVED! Bulk wholesale tiers unlocked.', 'success');
+    } else {
+      showToast('Admin Simulation: Wholesale Dealer set to PENDING admin review.', 'normal');
+    }
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    setCurrentRole('b2c');
+    showToast('Signed out successfully', 'normal');
   };
 
   const setRole = (role: AppRole) => {
@@ -229,8 +375,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setViewportMode(mode);
   };
 
-  // Cart
+  // Cart Operation: Gatekept by Authentication as requested!
   const addToCart = (productId: string, variant: string, color: string, qty: number = 1) => {
+    if (!currentUser) {
+      setPendingCartItem({ productId, variant, color, qty });
+      setAuthModalTab('register');
+      setIsAuthModalOpen(true);
+      showToast('Please sign in or create an account (Personal or Wholesale) to add products to your cart.', 'warning');
+      return;
+    }
+
     setCart((prev) => {
       const existingIndex = prev.findIndex(
         (item) => item.productId === productId && item.variant === variant && item.color === color
@@ -242,7 +396,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { productId, variant, color, qty }];
     });
-    showToast('Added to shopping bag!', 'success');
+
+    if (currentUser.role === 'b2b') {
+      if (currentUser.b2bStatus === 'approved') {
+        showToast(`Added ${qty} items with wholesale dealer pricing!`, 'success');
+      } else {
+        showToast(`Added to cart. Note: Wholesale discount unlocks upon admin approval.`, 'normal');
+      }
+    } else {
+      showToast('Added to shopping bag!', 'success');
+    }
   };
 
   const updateCartQty = (productId: string, variant: string, color: string, delta: number) => {
@@ -436,10 +599,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast(`Added ₹${amount.toLocaleString('en-IN')} credit invoice`, 'warning');
   };
 
-  // Add Product
+  // Add Product & Reset
   const addNewProduct = (product: Product) => {
     setProducts((prev) => [product, ...prev]);
     showToast(`Registered SKU ${product.sku} successfully!`, 'success');
+  };
+
+  const resetCatalog = () => {
+    setProducts(INITIAL_PRODUCTS);
+    showToast('Catalog restored to default factory products', 'normal');
   };
 
   // Orders
@@ -579,6 +747,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         isCreateAccountOpen,
         lastGeneratedBill,
         toasts,
+        currentUser,
+        pendingCartItem,
+        currency,
+        isAuthModalOpen,
+        authModalTab,
+        setCurrency,
+        setIsAuthModalOpen,
+        setAuthModalTab,
+        registerUser,
+        loginUser,
+        toggleB2BApproval,
+        logoutUser,
         setRole,
         setTab,
         setViewport,
@@ -605,6 +785,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         recordKhataPayment,
         giveKhataCredit,
         addNewProduct,
+        resetCatalog,
         createOrder,
         updateOrderStatus,
         submitWarrantyClaim,

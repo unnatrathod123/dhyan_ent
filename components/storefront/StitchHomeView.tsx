@@ -29,12 +29,11 @@ import {
 export default function StitchHomeView() {
   const {
     products,
+    cart,
     setSelectedProduct,
     setIsProductDetailOpen,
-    setIsCreateAccountOpen,
     addToCart,
     setIsCartOpen,
-    setTab,
     showToast
   } = useStore();
 
@@ -55,8 +54,22 @@ export default function StitchHomeView() {
     return () => clearInterval(timer);
   }, []);
 
-  const flashDealProducts = products.filter((p) => p.category === 'smartphones');
-  const accessoryProducts = products.filter((p) => p.category === 'chargers');
+  const flashDealProducts = products.filter(
+    (p) =>
+      p.category === 'smartphones' &&
+      (activeBrand === 'All' || p.brand.toLowerCase() === activeBrand.toLowerCase()) &&
+      (!searchVal.trim() ||
+        p.title.toLowerCase().includes(searchVal.toLowerCase()) ||
+        p.brand.toLowerCase().includes(searchVal.toLowerCase()))
+  );
+
+  const accessoryProducts = products.filter(
+    (p) =>
+      p.category !== 'smartphones' &&
+      (!searchVal.trim() ||
+        p.title.toLowerCase().includes(searchVal.toLowerCase()) ||
+        p.brand.toLowerCase().includes(searchVal.toLowerCase()))
+  );
 
   const handleCardClick = (product: any) => {
     setSelectedProduct(product);
@@ -78,7 +91,12 @@ export default function StitchHomeView() {
           </button>
 
           {/* Dhyan Enterprise Official Logo */}
-          <div className="cursor-pointer" onClick={() => setTab('storefront')}>
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          >
             <div className="relative h-7 w-28 sm:w-32">
               <Image
                 src="/Dhyan_Logo.png"
@@ -100,29 +118,36 @@ export default function StitchHomeView() {
 
         {/* Right Action Icons */}
         <div className="flex items-center gap-2">
+          {/* Cart Icon */}
           <button
-            onClick={() => showToast('Opening Search...', 'normal')}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#414753] hover:bg-[#eff4ff]"
+            onClick={() => setIsCartOpen(true)}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#414753] hover:bg-[#eff4ff] relative transition cursor-pointer"
+            title="Shopping Cart"
           >
-            <Search size={18} />
+            <ShoppingCart size={18} />
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#0076df] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                {cart.reduce((sum, item) => sum + item.qty, 0)}
+              </span>
+            )}
           </button>
 
           <button
-            onClick={() => showToast('You have 1 order ready for pickup!', 'normal')}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#414753] hover:bg-[#eff4ff] relative"
+            onClick={() => showToast('Store open till 10:00 PM tonight', 'normal')}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#414753] hover:bg-[#eff4ff] relative cursor-pointer"
+            title="Notifications"
           >
             <Bell size={18} />
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-600"></span>
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500"></span>
           </button>
 
-          {/* Profile Box */}
-          <button
-            onClick={() => setIsCreateAccountOpen(true)}
-            className="w-7 h-7 rounded-lg bg-[#dae2fd] hover:bg-[#0076df] text-[#004689] hover:text-white font-bold text-[11px] flex items-center justify-center border border-[#c1c6d5] shadow-2xs transition active:scale-95 cursor-pointer"
-            title="Create Account / Partner Registration"
+          {/* Profile / Verified Store Badge */}
+          <div
+            className="w-7 h-7 rounded-lg bg-[#dae2fd] text-[#004689] font-bold text-[11px] flex items-center justify-center border border-[#c1c6d5] shadow-2xs"
+            title="Dhyan Enterprise Official Hub"
           >
-            JD
-          </button>
+            DE
+          </div>
         </div>
       </div>
 
@@ -138,14 +163,15 @@ export default function StitchHomeView() {
             className="w-full bg-transparent text-xs text-[#0b1c30] placeholder:text-[#717784] outline-none"
           />
           <div className="flex items-center gap-2 pl-2">
-            <button className="text-[#717784] hover:text-[#0b1c30]">
+            <button
+              onClick={() => showToast('Voice search listening...', 'normal')}
+              className="text-[#717784] hover:text-[#0b1c30]"
+              title="Voice Search"
+            >
               <Mic size={16} />
             </button>
             <button
-              onClick={() => {
-                setTab('pos');
-                showToast('Switched to Barcode POS Scanner', 'normal');
-              }}
+              onClick={() => showToast('Barcode camera active for quick SKU scan', 'normal')}
               className="w-6 h-6 rounded-full bg-[#0076df] text-white flex items-center justify-center shadow-sm"
               title="Barcode Scanner"
             >
@@ -303,6 +329,7 @@ export default function StitchHomeView() {
                       alt={prod.title}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+                      unoptimized={prod.imageUrl.startsWith('data:')}
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

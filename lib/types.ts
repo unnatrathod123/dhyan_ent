@@ -1,4 +1,21 @@
-export type ProductCategory = 'smartphones' | 'audio' | 'chargers' | 'protection' | 'accessories';
+export type ProductCategory =
+  | 'phones'
+  | 'cables'
+  | 'chargers'
+  | 'spare_parts'
+  | 'accessories'
+  | 'smartphones'
+  | 'audio'
+  | 'protection';
+
+export type Currency = 'USD' | 'INR';
+
+export interface VolumeTier {
+  minQty: number;
+  maxQty?: number;
+  priceUSD: number;
+  priceINR: number;
+}
 
 export interface ProductColor {
   name: string;
@@ -6,10 +23,14 @@ export interface ProductColor {
 }
 
 export interface ProductSpecs {
-  processor: string;
-  battery: string;
-  camera: string;
-  display: string;
+  processor?: string;
+  battery?: string;
+  camera?: string;
+  display?: string;
+  material?: string;
+  compatibility?: string;
+  powerOutput?: string;
+  warrantyPeriod?: string;
 }
 
 export interface Product {
@@ -18,8 +39,11 @@ export interface Product {
   title: string;
   brand: string;
   category: ProductCategory;
-  retailPrice: number;
-  wholesalePrice: number;
+  subtitle?: string; // e.g. "Navy", "White", "Screen", "Gray"
+  retailPrice: number; // in INR
+  wholesalePrice: number; // in INR
+  retailPriceUSD?: number;
+  wholesalePriceUSD?: number;
   mrp: number;
   discount: string;
   rating: number;
@@ -32,7 +56,37 @@ export interface Product {
   variants: string[];
   colors: ProductColor[];
   imeis: string[];
+  moq?: number; // Minimum order quantity for B2B
+  volumeTiers?: VolumeTier[];
 }
+
+export type B2BApprovalStatus = 'none' | 'pending' | 'approved' | 'rejected';
+
+export interface UserAccount {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: 'b2c' | 'b2b';
+  b2bStatus: B2BApprovalStatus;
+  businessName?: string;
+  gstin?: string;
+  businessType?: 'retailer' | 'repair_shop' | 'wholesaler' | 'corporate';
+  address?: string;
+  city?: string;
+  pincode?: string;
+  creditLimit: number;
+  usedCredit: number;
+  registeredAt: string;
+}
+
+export interface PendingCartItem {
+  productId: string;
+  variant: string;
+  color: string;
+  qty: number;
+}
+
 
 export interface CartItem {
   productId: string;

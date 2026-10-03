@@ -87,7 +87,7 @@ interface StoreContextType {
     city?: string;
     pincode?: string;
   }) => void;
-  loginUser: (emailOrPhone: string, asRole?: 'b2c' | 'b2b') => void;
+  loginUser: (emailOrPhone: string, asRole?: 'b2c' | 'b2b' | 'admin') => void;
   toggleB2BApproval: () => void;
   logoutUser: () => void;
   setRole: (role: AppRole) => void;
@@ -124,6 +124,7 @@ interface StoreContextType {
 
   // Inventory & Orders
   addNewProduct: (product: Product) => void;
+  deleteProduct: (productId: string) => void;
   resetCatalog: () => void;
   createOrder: (deliveryMode: 'pickup' | 'delivery', hub?: string) => Order | null;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
@@ -180,7 +181,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [isShiftModalOpen, setIsShiftModalOpen] = useState<boolean>(false);
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState<boolean>(false);
   const [isGiveCreditOpen, setIsGiveCreditOpen] = useState<boolean>(false);
-  const [isAddNewProductOpen, setIsAddNewProductOpen] = useState<boolean>(false);
+  const [isAddNewProductOpen, _setIsAddNewProductOpen] = useState<boolean>(false);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState<boolean>(false);
   const [lastGeneratedBill, setLastGeneratedBill] = useState<POSBill | null>(null);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -313,23 +314,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loginUser = (emailOrPhone: string, asRole: 'b2c' | 'b2b' = 'b2c') => {
+  const loginUser = (emailOrPhone: string, asRole: 'b2c' | 'b2b' | 'admin' = 'b2c') => {
     const isB2B = asRole === 'b2b';
+    const isAdmin = asRole === 'admin';
     const loggedUser: UserAccount = {
-      id: 'usr_' + Date.now(),
-      fullName: isB2B ? 'Apex Electronics Store' : 'Alex Johnson',
-      email: emailOrPhone.includes('@') ? emailOrPhone : 'shopper@techhub.me',
+      id: isAdmin ? 'usr_admin_01' : 'usr_' + Date.now(),
+      fullName: isAdmin ? 'Admin Inventory Manager' : isB2B ? 'Apex Electronics Store' : 'Alex Johnson',
+      email: emailOrPhone.includes('@') ? emailOrPhone : isAdmin ? 'admin@techhub.me' : 'shopper@techhub.me',
       phone: emailOrPhone.includes('@') ? '9876543210' : emailOrPhone,
       role: asRole,
       b2bStatus: isB2B ? 'approved' : 'none',
-      businessName: isB2B ? 'Apex Electronics Store LLC' : undefined,
+      businessName: isAdmin ? 'TechHub HQ Admin Console' : isB2B ? 'Apex Electronics Store LLC' : undefined,
       gstin: isB2B ? '24AAACD1234F1Z5' : undefined,
       creditLimit: isB2B ? 200000 : 0,
       usedCredit: 0,
       registeredAt: 'Oct 2026'
     };
     setCurrentUser(loggedUser);
-    setCurrentRole(asRole);
+    setCurrentRole(asRole as any);
     setIsAuthModalOpen(false);
     showToast(`Welcome back, ${loggedUser.fullName}!`, 'success');
 
@@ -607,10 +609,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast(`Added ₹${amount.toLocaleString('en-IN')} credit invoice`, 'warning');
   };
 
-  // Add Product & Reset
+  // Add Product & Delete & Reset (Strictly Restricted to Admin)
+  const setIsAddNewProductOpen = (open: boolean) => {
+    if (open && currentUser?.role !== 'admin') {
+      showToast('Restricted: Only verified store administrators can add new products', 'error');
+      _setIsAddNewProductOpen(false);
+      return;
+    }
+    _setIsAddNewProductOpen(open);
+  };
+
   const addNewProduct = (product: Product) => {
+    if (currentUser?.role !== 'admin') {
+      showToast('Restricted: Administrator access required to publish products', 'error');
+      return;
+    }
     setProducts((prev) => [product, ...prev]);
-    showToast(`Registered SKU ${product.sku} successfully!`, 'success');
+    showToast(`Published "${product.title}" (${product.sku}) to catalog!`, 'success');
+  };
+
+  const deleteProduct = (productId: string) => {
+    if (currentUser?.role !== 'admin') {
+      showToast('Restricted: Administrator access required to delete products', 'error');
+      return;
+    }
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    showToast('Product removed from catalog', 'normal');
   };
 
   const resetCatalog = () => {
@@ -793,6 +817,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         recordKhataPayment,
         giveKhataCredit,
         addNewProduct,
+        deleteProduct,
         resetCatalog,
         createOrder,
         updateOrderStatus,

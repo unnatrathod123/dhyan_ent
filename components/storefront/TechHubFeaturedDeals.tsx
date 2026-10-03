@@ -123,9 +123,30 @@ export default function TechHubFeaturedDeals({
                 </h3>
 
                 {/* Subtitle / Variant Tag matching screenshot */}
-                <p className="text-[11px] sm:text-xs text-slate-400 font-normal mt-0.5 mb-1.5 sm:mb-2 truncate">
+                <p className="text-[11px] sm:text-xs text-slate-400 font-normal mt-0.5 mb-1 truncate">
                   {product.subtitle || product.brand}
                 </p>
+
+                {/* Available Colors Swatches */}
+                {product.colors && product.colors.length > 0 && (
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <div className="flex items-center -space-x-1">
+                      {product.colors.slice(0, 5).map((c, i) => (
+                        <span
+                          key={i}
+                          className="w-3 h-3 rounded-full border border-white shadow-2xs shrink-0"
+                          style={{ backgroundColor: c.hex }}
+                          title={c.name}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-medium truncate">
+                      {product.colors.length === 1
+                        ? product.colors[0].name
+                        : `${product.colors.length} colors`}
+                    </span>
+                  </div>
+                )}
 
                 {/* Price Display */}
                 <div className="flex flex-wrap items-baseline gap-1 sm:gap-2 mb-2.5 sm:mb-4">

@@ -430,6 +430,21 @@ export default function TechHubAuthModal() {
                       <div className="text-[10px] text-blue-700">Verified bulk tiers</div>
                     </div>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => loginUser('admin@techhub.me', 'admin')}
+                    className="p-2.5 text-left border border-indigo-200 rounded-xl bg-indigo-50/60 hover:bg-indigo-50 transition text-xs flex items-center gap-2 sm:col-span-2"
+                  >
+                    <ShieldCheck size={16} className="text-indigo-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold text-indigo-900 flex items-center gap-1.5">
+                        <span>👑 HQ Admin Manager</span>
+                        <span className="text-[9px] bg-indigo-200 text-indigo-800 font-bold px-1.5 py-0.2 rounded-full">Full Control</span>
+                      </div>
+                      <div className="text-[10px] text-indigo-700">Add new products, set wholesale pricing & manage stock</div>
+                    </div>
+                  </button>
                 </div>
               </div>
             </form>

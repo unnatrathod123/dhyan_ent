@@ -23,9 +23,16 @@ import {
 interface TechHubHeaderProps {
   onSelectCategory?: (category: string) => void;
   activeCategory?: string;
+  onNavigateTab?: (tab: 'storefront' | 'b2b_portal' | 'admin_portal') => void;
+  activeViewMode?: 'storefront' | 'b2b_portal' | 'admin_portal';
 }
 
-export default function TechHubHeader({ onSelectCategory, activeCategory }: TechHubHeaderProps) {
+export default function TechHubHeader({
+  onSelectCategory,
+  activeCategory,
+  onNavigateTab,
+  activeViewMode
+}: TechHubHeaderProps) {
   const {
     currentUser,
     cart,
@@ -253,7 +260,9 @@ export default function TechHubHeader({ onSelectCategory, activeCategory }: Tech
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   className={`flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1 rounded-full border text-xs font-medium transition ${
-                    currentUser.role === 'b2b'
+                    currentUser.role === 'admin'
+                      ? 'bg-indigo-50 border-indigo-200 text-indigo-900'
+                      : currentUser.role === 'b2b'
                       ? currentUser.b2bStatus === 'approved'
                         ? 'bg-blue-50/80 border-blue-200 text-blue-800'
                         : 'bg-amber-50 border-amber-200 text-amber-800'
@@ -262,20 +271,26 @@ export default function TechHubHeader({ onSelectCategory, activeCategory }: Tech
                 >
                   <User size={16} />
                   <span className="hidden md:inline max-w-[120px] truncate">
-                    {currentUser.role === 'b2b'
+                    {currentUser.role === 'admin'
+                      ? 'HQ Admin'
+                      : currentUser.role === 'b2b'
                       ? currentUser.businessName || currentUser.fullName
                       : currentUser.fullName}
                   </span>
                   <span
                     className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full uppercase ${
-                      currentUser.role === 'b2b'
+                      currentUser.role === 'admin'
+                        ? 'bg-indigo-600 text-white'
+                        : currentUser.role === 'b2b'
                         ? currentUser.b2bStatus === 'approved'
                           ? 'bg-blue-600 text-white'
                           : 'bg-amber-500 text-white'
                         : 'bg-slate-200 text-slate-700'
                     }`}
                   >
-                    {currentUser.role === 'b2b'
+                    {currentUser.role === 'admin'
+                      ? 'Admin'
+                      : currentUser.role === 'b2b'
                       ? currentUser.b2bStatus === 'approved'
                         ? 'B2B'
                         : 'Review'
@@ -308,14 +323,18 @@ export default function TechHubHeader({ onSelectCategory, activeCategory }: Tech
                     <div className="mt-1">
                       <span
                         className={`text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block ${
-                          currentUser.role === 'b2b'
+                          currentUser.role === 'admin'
+                            ? 'bg-indigo-100 text-indigo-800 font-bold'
+                            : currentUser.role === 'b2b'
                             ? currentUser.b2bStatus === 'approved'
                               ? 'bg-blue-100 text-blue-800'
                               : 'bg-amber-100 text-amber-800'
                             : 'bg-slate-100 text-slate-800'
                         }`}
                       >
-                        {currentUser.role === 'b2b'
+                        {currentUser.role === 'admin'
+                          ? '👑 System Administrator'
+                          : currentUser.role === 'b2b'
                           ? currentUser.b2bStatus === 'approved'
                             ? '🏢 Wholesale Dealer (Verified)'
                             : '⏳ Wholesale Review Pending'
@@ -323,6 +342,21 @@ export default function TechHubHeader({ onSelectCategory, activeCategory }: Tech
                       </span>
                     </div>
                   </div>
+
+                  {currentUser.role === 'admin' && (
+                    <div className="px-3 py-2 border-b border-slate-100">
+                      <button
+                        onClick={() => {
+                          onNavigateTab?.('admin_portal');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full text-left text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 transition"
+                      >
+                        <ShieldCheck size={14} />
+                        <span>🛠️ Inventory & Add Products</span>
+                      </button>
+                    </div>
+                  )}
 
                   {currentUser.role === 'b2b' && (
                     <div className="px-3 py-2 border-b border-slate-100 text-xs">
@@ -475,7 +509,11 @@ export default function TechHubHeader({ onSelectCategory, activeCategory }: Tech
                   <div className="text-xs">
                     <span className="font-semibold text-slate-800 block">{currentUser.fullName}</span>
                     <span className="text-[10px] text-slate-500 capitalize">
-                      {currentUser.role === 'b2b' ? '🏢 Wholesale Dealer' : '👤 Personal Shopper'}
+                      {currentUser.role === 'admin'
+                        ? '👑 Admin Catalog Manager'
+                        : currentUser.role === 'b2b'
+                        ? '🏢 Wholesale Dealer'
+                        : '👤 Personal Shopper'}
                     </span>
                   </div>
                   <button

@@ -34,6 +34,7 @@ export default function TechHubB2BPortal() {
   } = useStore();
 
   const [bulkQuantities, setBulkQuantities] = useState<{ [key: string]: number }>({});
+  const [bulkColors, setBulkColors] = useState<{ [key: string]: string }>({});
   const [repayAmount, setRepayAmount] = useState<string>('500');
 
   const isB2B = currentUser?.role === 'b2b';
@@ -51,8 +52,9 @@ export default function TechHubB2BPortal() {
     const qty = bulkQuantities[productId] || moq;
     const prod = products.find((p) => p.id === productId);
     if (!prod) return;
-    addToCart(productId, prod.variants[0] || 'Standard', prod.colors[0]?.name || 'Standard', qty);
-    showToast(`Added ${qty} units of ${prod.title} to wholesale order!`, 'success');
+    const chosenColor = bulkColors[productId] || prod.colors[0]?.name || 'Standard';
+    addToCart(productId, prod.variants[0] || 'Standard', chosenColor, qty);
+    showToast(`Added ${qty} units of ${prod.title} (${chosenColor}) to wholesale order!`, 'success');
   };
 
   const handleRepay = (e: React.FormEvent) => {
@@ -274,6 +276,33 @@ export default function TechHubB2BPortal() {
                     <td className="py-3.5 px-6">
                       <div className="font-semibold text-slate-900">{p.title}</div>
                       <div className="text-[11px] font-mono text-slate-400">{p.sku}</div>
+                      {p.colors && p.colors.length > 0 && (
+                        <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                          <span className="text-[10px] text-slate-400 font-medium mr-0.5">Finish:</span>
+                          {p.colors.map((c) => {
+                            const isSelected = (bulkColors[p.id] || p.colors[0]?.name) === c.name;
+                            return (
+                              <button
+                                key={c.name}
+                                type="button"
+                                onClick={() => setBulkColors((prev) => ({ ...prev, [p.id]: c.name }))}
+                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border transition ${
+                                  isSelected
+                                    ? 'bg-blue-50 text-blue-700 border-blue-300 ring-1 ring-blue-400/30 font-semibold'
+                                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                                }`}
+                                title={`Select ${c.name}`}
+                              >
+                                <span
+                                  className="w-2 h-2 rounded-full border border-black/15 shrink-0"
+                                  style={{ backgroundColor: c.hex }}
+                                />
+                                <span>{c.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 font-medium text-slate-600 capitalize">
                       {p.category.replace('_', ' ')}

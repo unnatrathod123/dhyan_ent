@@ -67,7 +67,7 @@ export interface UserAccount {
   fullName: string;
   email: string;
   phone: string;
-  role: 'b2c' | 'b2b';
+  role: 'b2c' | 'b2b' | 'admin';
   b2bStatus: B2BApprovalStatus;
   businessName?: string;
   gstin?: string;

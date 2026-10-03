@@ -203,6 +203,45 @@ export default function TechHubProductDetailModal({
                 </div>
               )}
 
+              {/* Color Finish Selector */}
+              {product.colors && product.colors.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-semibold text-slate-700">
+                      Select Color: <span className="font-bold text-slate-900">{defaultColor}</span>
+                    </label>
+                    <span className="text-[11px] text-slate-400">
+                      {product.colors.length} {product.colors.length === 1 ? 'color' : 'colors'}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((c) => {
+                      const isSelected = defaultColor === c.name;
+                      return (
+                        <button
+                          key={c.name}
+                          type="button"
+                          onClick={() => setSelectedColor(c.name)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-2 transition ${
+                            isSelected
+                              ? 'border-[#2563eb] bg-blue-50/70 text-[#2563eb] font-semibold ring-1 ring-blue-500/20 shadow-2xs'
+                              : 'border-slate-200 text-slate-700 hover:border-slate-300 bg-white'
+                          }`}
+                        >
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border border-black/15 shadow-2xs shrink-0 flex items-center justify-center"
+                            style={{ backgroundColor: c.hex }}
+                          />
+                          <span>{c.name}</span>
+                          {isSelected && <Check size={12} className="text-[#2563eb]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Variants Selector */}
               {product.variants.length > 0 && (
                 <div>

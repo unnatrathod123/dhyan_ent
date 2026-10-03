@@ -12,9 +12,11 @@ import TechHubFeaturedDeals from '@/components/storefront/TechHubFeaturedDeals';
 import TechHubProductDetailModal from '@/components/storefront/TechHubProductDetailModal';
 import TechHubAuthModal from '@/components/auth/TechHubAuthModal';
 import TechHubB2BPortal from '@/components/b2b/TechHubB2BPortal';
+import TechHubAdminPortal from '@/components/admin/TechHubAdminPortal';
+import TechHubAdminAddProductModal from '@/components/admin/TechHubAdminAddProductModal';
 import CartDrawer from '@/components/cart/CartDrawer';
 import ToastContainer from '@/components/common/ToastContainer';
-import { Sparkles, Layers, ShieldCheck, ArrowRight, Building2, Package } from 'lucide-react';
+import { Sparkles, Layers, ShieldCheck, ArrowRight, Building2, Package, Lock } from 'lucide-react';
 
 export default function TechHubMainView() {
   const {
@@ -31,7 +33,7 @@ export default function TechHubMainView() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [activeBrand, setActiveBrand] = useState<string>('All');
   const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null);
-  const [viewMode, setViewMode] = useState<'storefront' | 'b2b_portal'>('storefront');
+  const [viewMode, setViewMode] = useState<'storefront' | 'b2b_portal' | 'admin_portal'>('storefront');
 
   // Filter products based on search, category, and brand
   const filteredProducts = products.filter((p) => {
@@ -92,9 +94,11 @@ export default function TechHubMainView() {
           const el = document.getElementById('catalog-section');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }}
+        onNavigateTab={(tab) => setViewMode(tab)}
+        activeViewMode={viewMode}
       />
 
-      {/* Mode Sub-navigation: Storefront vs B2B Wholesale Portal */}
+      {/* Mode Sub-navigation: Storefront vs B2B Wholesale Portal vs Admin Console */}
       <div className="bg-slate-50 border-b border-slate-200/60 py-2 px-3 sm:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 sm:gap-2">
@@ -120,13 +124,47 @@ export default function TechHubMainView() {
               <Building2 size={13} />
               <span>B2B Wholesale Hub</span>
             </button>
+
+            {currentUser?.role === 'admin' ? (
+              <button
+                onClick={() => setViewMode('admin_portal')}
+                className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${
+                  viewMode === 'admin_portal'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-indigo-600'
+                }`}
+              >
+                <ShieldCheck size={13} />
+                <span>Admin Console</span>
+                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                  viewMode === 'admin_portal' ? 'bg-indigo-500 text-white' : 'bg-indigo-100 text-indigo-700'
+                }`}>
+                  + Add Product
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setViewMode('admin_portal')}
+                className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${
+                  viewMode === 'admin_portal'
+                    ? 'bg-slate-800 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-slate-700'
+                }`}
+                title="Admin Authentication Required"
+              >
+                <Lock size={12} className="text-slate-400" />
+                <span>Admin (Staff Only)</span>
+              </button>
+            )}
           </div>
 
           <div className="text-[11px] text-slate-500 hidden md:flex items-center gap-2">
             <span>Customer Persona:</span>
             <span className="font-bold text-slate-800">
               {currentUser
-                ? currentUser.role === 'b2b'
+                ? currentUser.role === 'admin'
+                  ? '👑 System Administrator (Authorized to Add Products)'
+                  : currentUser.role === 'b2b'
                   ? currentUser.b2bStatus === 'approved'
                     ? '🏢 Wholesale Dealer (Verified)'
                     : '⏳ Wholesale Review Pending'
@@ -141,6 +179,8 @@ export default function TechHubMainView() {
       <main className="flex-1">
         {viewMode === 'b2b_portal' ? (
           <TechHubB2BPortal />
+        ) : viewMode === 'admin_portal' ? (
+          <TechHubAdminPortal onReturnToStore={() => setViewMode('storefront')} />
         ) : (
           <>
             {/* 2. Hero Section matching screenshot */}
@@ -264,6 +304,16 @@ export default function TechHubMainView() {
                   Khata Net-30 Credit Line
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => {
+                    setViewMode('admin_portal');
+                  }}
+                  className="hover:text-indigo-400 text-indigo-300 font-semibold transition flex items-center gap-1.5"
+                >
+                  <span>👑 Admin Inventory & Add Products</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -290,6 +340,7 @@ export default function TechHubMainView() {
 
       {/* Modals & Overlays */}
       <TechHubAuthModal />
+      <TechHubAdminAddProductModal />
       <TechHubProductDetailModal
         product={selectedModalProduct}
         onClose={() => setSelectedModalProduct(null)}

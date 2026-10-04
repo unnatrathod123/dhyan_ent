@@ -45,17 +45,17 @@ const PRESET_STUDIO_IMAGES = [
   { name: 'Nothing Phone 2a', url: '/images/nothing_phone_2a.jpg', brand: 'Nothing' },
   { name: 'Redmi Note 13', url: '/images/redmi_note_13.jpg', brand: 'Xiaomi' },
   { name: 'AirPods Pro 2', url: '/images/airpods_pro_2.jpg', brand: 'Apple' },
-  { name: 'SwiftPort GaN', url: '/images/swiftport_charger.jpg', brand: 'TechHub' },
+  { name: 'SwiftPort GaN', url: '/images/swiftport_charger.jpg', brand: 'Dhyan Enterprise' },
   { name: 'CMF 65W GaN', url: '/images/cmf_gan_charger.jpg', brand: 'Nothing' },
   { name: 'DuraLink Cable', url: '/images/duralink_cable.jpg', brand: 'Anker' },
   { name: 'Belkin Flex Cable', url: '/images/belkin_braided_cable.jpg', brand: 'Belkin' },
   { name: 'MagBoost PowerBank', url: '/images/magboost_powerbank.jpg', brand: 'Belkin' },
   { name: 'Galaxy S24 Screen', url: '/images/galaxy_screen_assembly.jpg', brand: 'Samsung' },
   { name: 'iPhone Screen Module', url: '/images/screen_assembly.jpg', brand: 'Apple' },
-  { name: 'OEM Battery Pack', url: '/images/oem_battery_pack.jpg', brand: 'TechHub' }
+  { name: 'OEM Battery Pack', url: '/images/oem_battery_pack.jpg', brand: 'Dhyan Enterprise' }
 ];
 
-export default function TechHubAdminAddProductModal() {
+export default function DhyanEnterpriseAdminAddProductModal() {
   const {
     isAddNewProductOpen,
     setIsAddNewProductOpen,
@@ -136,7 +136,7 @@ export default function TechHubAdminAddProductModal() {
               Restricted to Administrators
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Adding new products, configuring wholesale dealer discounts, and managing stock counts are strictly restricted to verified TechHub store administrators.
+              Adding new products, configuring wholesale dealer discounts, and managing stock counts are strictly restricted to verified Dhyan Enterprise store administrators.
             </p>
           </div>
 
@@ -152,7 +152,7 @@ export default function TechHubAdminAddProductModal() {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
             <button
               onClick={() => {
-                loginUser('admin@techhub.me', 'admin');
+                loginUser('admin@dhyanenterprise.com', 'admin');
               }}
               className="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition active:scale-98 flex items-center justify-center gap-1.5"
             >
@@ -364,7 +364,7 @@ export default function TechHubAdminAddProductModal() {
                   <option value="Anker">Anker</option>
                   <option value="Belkin">Belkin</option>
                   <option value="Xiaomi">Xiaomi</option>
-                  <option value="TechHub">TechHub</option>
+                  <option value="Dhyan Enterprise">Dhyan Enterprise</option>
                   <option value="Google">Google</option>
                   <option value="Sony">Sony</option>
                 </select>

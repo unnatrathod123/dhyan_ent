@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 
-interface TechHubBrandRowProps {
+interface DhyanEnterpriseBrandRowProps {
   activeBrand: string;
   onSelectBrand: (brand: string) => void;
 }
@@ -17,10 +17,10 @@ const BRANDS = [
   { name: 'Nothing', label: '•••', isDot: true },
   { name: 'OnePlus', label: '1+', isText: true },
   { name: 'Xiaomi', label: 'mi', isText: true },
-  { name: 'TechHub', label: 'TechHub', isText: true }
+  { name: 'Dhyan Enterprise', label: 'Dhyan Enterprise', isText: true }
 ];
 
-export default function TechHubBrandRow({ activeBrand, onSelectBrand }: TechHubBrandRowProps) {
+export default function DhyanEnterpriseBrandRow({ activeBrand, onSelectBrand }: DhyanEnterpriseBrandRowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {

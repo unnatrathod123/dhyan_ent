@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import TechHubMainView from '@/components/storefront/TechHubMainView';
+import DhyanEnterpriseMainView from '@/components/storefront/DhyanEnterpriseMainView';
 
 export default function Home() {
-  return <TechHubMainView />;
+  return <DhyanEnterpriseMainView />;
 }
 

@@ -4,15 +4,15 @@ import React from 'react';
 import Image from 'next/image';
 import { ArrowRight, Cpu, Wrench, ShieldCheck, Zap } from 'lucide-react';
 
-interface TechHubHeroProps {
+interface DhyanEnterpriseHeroProps {
   onShopAllCategories?: () => void;
   onFindYourPart?: () => void;
 }
 
-export default function TechHubHero({
+export default function DhyanEnterpriseHero({
   onShopAllCategories,
   onFindYourPart
-}: TechHubHeroProps) {
+}: DhyanEnterpriseHeroProps) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#e8f1fd] via-[#f2f7fe] to-[#f8fafc] border-b border-slate-200/60 pt-6 pb-12 sm:pt-10 sm:pb-16 lg:py-20">
       {/* Decorative ambient subtle background glows */}

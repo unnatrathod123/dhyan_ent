@@ -199,7 +199,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // Load from LocalStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('techhub_dhyan_state_v3') || localStorage.getItem('techhub_dhyan_state_v2');
+      const saved = localStorage.getItem('dhyan_enterprise_state_v3') || localStorage.getItem('techhub_dhyan_state_v3') || localStorage.getItem('techhub_dhyan_state_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.products && Array.isArray(parsed.products) && parsed.products.length > 0) {
@@ -250,7 +250,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         warrantyClaims,
         offlineQueue
       };
-      localStorage.setItem('techhub_dhyan_state_v3', JSON.stringify(toSave));
+      localStorage.setItem('dhyan_enterprise_state_v3', JSON.stringify(toSave));
     } catch {
       // ignore
     }
@@ -327,11 +327,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const loggedUser: UserAccount = {
       id: isAdmin ? 'usr_admin_01' : 'usr_' + Date.now(),
       fullName: isAdmin ? 'Admin Inventory Manager' : isB2B ? 'Apex Electronics Store' : 'Alex Johnson',
-      email: emailOrPhone.includes('@') ? emailOrPhone : isAdmin ? 'admin@techhub.me' : 'shopper@techhub.me',
+      email: emailOrPhone.includes('@') ? emailOrPhone : isAdmin ? 'admin@dhyanenterprise.com' : 'shopper@dhyanenterprise.com',
       phone: emailOrPhone.includes('@') ? '9876543210' : emailOrPhone,
       role: asRole,
       b2bStatus: isB2B ? 'approved' : 'none',
-      businessName: isAdmin ? 'TechHub HQ Admin Console' : isB2B ? 'Apex Electronics Store LLC' : undefined,
+      businessName: isAdmin ? 'Dhyan Enterprise HQ Admin Console' : isB2B ? 'Apex Electronics Store LLC' : undefined,
       gstin: isB2B ? '24AAACD1234F1Z5' : undefined,
       creditLimit: isB2B ? 200000 : 0,
       usedCredit: 0,

@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-export default function TechHubB2BPortal() {
+export default function DhyanEnterpriseB2BPortal() {
   const {
     currentUser,
     currency,
@@ -77,7 +77,7 @@ export default function TechHubB2BPortal() {
 
           <div className="max-w-2xl mx-auto space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              TechHub B2B Wholesale Portal
+              Dhyan Enterprise B2B Wholesale Portal
             </h1>
             <p className="text-sm sm:text-base text-blue-100 font-normal">
               Specialized pricing, bulk cartons, digital Khata credit terms, and GST tax invoices for mobile retailers, repair workshops, and electronics distributors.
@@ -444,7 +444,7 @@ export default function TechHubB2BPortal() {
           </div>
 
           <div className="p-3 rounded-xl bg-white border border-slate-200 text-[11px] text-slate-600">
-            <strong>Bank Wire Account:</strong> TechHub Enterprise Wholesale • Bank of America / HDFC • IFSC/Routing #998822
+            <strong>Bank Wire Account:</strong> Dhyan Enterprise Wholesale • Bank of America / HDFC • IFSC/Routing #998822
           </div>
         </div>
       </div>

@@ -20,19 +20,19 @@ import {
   X
 } from 'lucide-react';
 
-interface TechHubHeaderProps {
+interface DhyanEnterpriseHeaderProps {
   onSelectCategory?: (category: string) => void;
   activeCategory?: string;
   onNavigateTab?: (tab: 'storefront' | 'b2b_portal' | 'admin_portal') => void;
   activeViewMode?: 'storefront' | 'b2b_portal' | 'admin_portal';
 }
 
-export default function TechHubHeader({
+export default function DhyanEnterpriseHeader({
   onSelectCategory,
   activeCategory,
   onNavigateTab,
   activeViewMode
-}: TechHubHeaderProps) {
+}: DhyanEnterpriseHeaderProps) {
   const {
     currentUser,
     cart,
@@ -79,7 +79,7 @@ export default function TechHubHeader({
     { id: 'spare_parts', label: 'Spare Parts' }
   ];
 
-  const brandsList = ['Samsung', 'Apple', 'Anker', 'Belkin', 'Nothing', 'Xiaomi', 'TechHub'];
+  const brandsList = ['Samsung', 'Apple', 'Anker', 'Belkin', 'Nothing', 'Xiaomi', 'Dhyan Enterprise'];
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200/80 shadow-xs">

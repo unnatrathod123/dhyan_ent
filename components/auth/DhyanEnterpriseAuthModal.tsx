@@ -21,7 +21,7 @@ import {
   ShoppingBag
 } from 'lucide-react';
 
-export default function TechHubAuthModal() {
+export default function DhyanEnterpriseAuthModal() {
   const {
     isAuthModalOpen,
     setIsAuthModalOpen,
@@ -42,7 +42,7 @@ export default function TechHubAuthModal() {
   const [fullName, setFullName] = useState('Alex Johnson');
   const [email, setEmail] = useState('alex.johnson@example.com');
   const [phone, setPhone] = useState('+1 (555) 234-5678');
-  const [password, setPassword] = useState('TechHubSecure2026!');
+  const [password, setPassword] = useState('DhyanEnterpriseSecure2026!');
 
   // B2B specific fields
   const [businessName, setBusinessName] = useState('Apex Mobile Solutions & Repair LLC');
@@ -80,7 +80,7 @@ export default function TechHubAuthModal() {
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginUser(loginIdentifier || 'shopper@techhub.me', selectedPersona);
+    loginUser(loginIdentifier || 'shopper@dhyanenterprise.com', selectedPersona);
   };
 
   return (
@@ -93,7 +93,7 @@ export default function TechHubAuthModal() {
         <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
-              {authModalTab === 'register' ? 'Join TechHub' : 'Welcome Back'}
+              {authModalTab === 'register' ? 'Join Dhyan Enterprise' : 'Welcome Back'}
             </h2>
             <p className="text-[11px] sm:text-xs text-slate-500">
               {authModalTab === 'register'
@@ -411,7 +411,7 @@ export default function TechHubAuthModal() {
                 type="submit"
                 className="w-full bg-[#2563eb] hover:bg-blue-700 active:scale-98 text-white font-semibold text-sm py-3.5 rounded-xl shadow-md shadow-blue-500/15 transition-all flex items-center justify-center gap-2"
               >
-                <span>Sign In to TechHub</span>
+                <span>Sign In to Dhyan Enterprise</span>
                 <ArrowRight size={16} />
               </button>
 
@@ -424,7 +424,7 @@ export default function TechHubAuthModal() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => loginUser('consumer@techhub.me', 'b2c')}
+                    onClick={() => loginUser('consumer@dhyanenterprise.com', 'b2c')}
                     className="p-2.5 text-left border border-slate-200 rounded-xl hover:bg-slate-50 transition text-xs flex items-center gap-2"
                   >
                     <User size={15} className="text-blue-600" />
@@ -436,7 +436,7 @@ export default function TechHubAuthModal() {
 
                   <button
                     type="button"
-                    onClick={() => loginUser('dealer@techhub.me', 'b2b')}
+                    onClick={() => loginUser('dealer@dhyanenterprise.com', 'b2b')}
                     className="p-2.5 text-left border border-blue-200 rounded-xl bg-blue-50/50 hover:bg-blue-50 transition text-xs flex items-center gap-2"
                   >
                     <Building2 size={15} className="text-[#2563eb]" />
@@ -448,7 +448,7 @@ export default function TechHubAuthModal() {
 
                   <button
                     type="button"
-                    onClick={() => loginUser('admin@techhub.me', 'admin')}
+                    onClick={() => loginUser('admin@dhyanenterprise.com', 'admin')}
                     className="p-2.5 text-left border border-indigo-200 rounded-xl bg-indigo-50/60 hover:bg-indigo-50 transition text-xs flex items-center gap-2 sm:col-span-2"
                   >
                     <ShieldCheck size={16} className="text-indigo-600 shrink-0" />

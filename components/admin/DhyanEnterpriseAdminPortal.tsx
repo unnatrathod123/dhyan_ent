@@ -21,11 +21,11 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-interface TechHubAdminPortalProps {
+interface DhyanEnterpriseAdminPortalProps {
   onReturnToStore?: () => void;
 }
 
-export default function TechHubAdminPortal({ onReturnToStore }: TechHubAdminPortalProps) {
+export default function DhyanEnterpriseAdminPortal({ onReturnToStore }: DhyanEnterpriseAdminPortalProps) {
   const {
     products,
     currency,
@@ -61,7 +61,7 @@ export default function TechHubAdminPortal({ onReturnToStore }: TechHubAdminPort
               Administrator Authentication Required
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              Adding new products, configuring wholesale dealer discounts, and managing stock counts are strictly restricted to verified TechHub store administrators.
+              Adding new products, configuring wholesale dealer discounts, and managing stock counts are strictly restricted to verified Dhyan Enterprise store administrators.
             </p>
           </div>
 
@@ -84,7 +84,7 @@ export default function TechHubAdminPortal({ onReturnToStore }: TechHubAdminPort
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
-              onClick={() => loginUser('admin@techhub.me', 'admin')}
+              onClick={() => loginUser('admin@dhyanenterprise.com', 'admin')}
               className="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-500/20 transition active:scale-98 flex items-center justify-center gap-2"
             >
               <ShieldCheck size={16} />

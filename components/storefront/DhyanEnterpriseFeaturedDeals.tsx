@@ -7,15 +7,15 @@ import { useStore } from '@/lib/store/StoreContext';
 import { formatCurrency, formatProductPrice } from '@/lib/utils/formatters';
 import { ShoppingCart, Star, ShieldCheck, Building2, Eye, Tag } from 'lucide-react';
 
-interface TechHubFeaturedDealsProps {
+interface DhyanEnterpriseFeaturedDealsProps {
   products: Product[];
   onOpenProductDetail: (product: Product) => void;
 }
 
-export default function TechHubFeaturedDeals({
+export default function DhyanEnterpriseFeaturedDeals({
   products,
   onOpenProductDetail
-}: TechHubFeaturedDealsProps) {
+}: DhyanEnterpriseFeaturedDealsProps) {
   const { currentUser, currency, addToCart } = useStore();
 
   const isB2BApproved = currentUser?.role === 'b2b' && currentUser.b2bStatus === 'approved';

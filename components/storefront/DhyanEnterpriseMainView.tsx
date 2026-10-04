@@ -5,20 +5,20 @@ import Image from 'next/image';
 import { useStore } from '@/lib/store/StoreContext';
 
 import { Product } from '@/lib/types';
-import TechHubHeader from '@/components/common/TechHubHeader';
-import TechHubHero from '@/components/storefront/TechHubHero';
-import TechHubBrandRow from '@/components/storefront/TechHubBrandRow';
-import TechHubFeaturedDeals from '@/components/storefront/TechHubFeaturedDeals';
-import TechHubProductDetailModal from '@/components/storefront/TechHubProductDetailModal';
-import TechHubAuthModal from '@/components/auth/TechHubAuthModal';
-import TechHubB2BPortal from '@/components/b2b/TechHubB2BPortal';
-import TechHubAdminPortal from '@/components/admin/TechHubAdminPortal';
-import TechHubAdminAddProductModal from '@/components/admin/TechHubAdminAddProductModal';
+import DhyanEnterpriseHeader from '@/components/common/DhyanEnterpriseHeader';
+import DhyanEnterpriseHero from '@/components/storefront/DhyanEnterpriseHero';
+import DhyanEnterpriseBrandRow from '@/components/storefront/DhyanEnterpriseBrandRow';
+import DhyanEnterpriseFeaturedDeals from '@/components/storefront/DhyanEnterpriseFeaturedDeals';
+import DhyanEnterpriseProductDetailModal from '@/components/storefront/DhyanEnterpriseProductDetailModal';
+import DhyanEnterpriseAuthModal from '@/components/auth/DhyanEnterpriseAuthModal';
+import DhyanEnterpriseB2BPortal from '@/components/b2b/DhyanEnterpriseB2BPortal';
+import DhyanEnterpriseAdminPortal from '@/components/admin/DhyanEnterpriseAdminPortal';
+import DhyanEnterpriseAdminAddProductModal from '@/components/admin/DhyanEnterpriseAdminAddProductModal';
 import CartDrawer from '@/components/cart/CartDrawer';
 import ToastContainer from '@/components/common/ToastContainer';
 import { Sparkles, Layers, ShieldCheck, ArrowRight, Building2, Package, Lock } from 'lucide-react';
 
-export default function TechHubMainView() {
+export default function DhyanEnterpriseMainView() {
   const {
     products,
     searchQuery,
@@ -86,7 +86,7 @@ export default function TechHubMainView() {
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans antialiased flex flex-col selection:bg-blue-100 selection:text-blue-900">
       {/* 1. Header matching screenshot */}
-      <TechHubHeader
+      <DhyanEnterpriseHeader
         activeCategory={activeCategory}
         onSelectCategory={(cat) => {
           setViewMode('storefront');
@@ -178,19 +178,19 @@ export default function TechHubMainView() {
       {/* Main Content Area */}
       <main className="flex-1">
         {viewMode === 'b2b_portal' ? (
-          <TechHubB2BPortal />
+          <DhyanEnterpriseB2BPortal />
         ) : viewMode === 'admin_portal' ? (
-          <TechHubAdminPortal onReturnToStore={() => setViewMode('storefront')} />
+          <DhyanEnterpriseAdminPortal onReturnToStore={() => setViewMode('storefront')} />
         ) : (
           <>
             {/* 2. Hero Section matching screenshot */}
-            <TechHubHero
+            <DhyanEnterpriseHero
               onShopAllCategories={handleShopAllCategories}
               onFindYourPart={handleFindYourPart}
             />
 
             {/* 3. Shop by Brand Row matching screenshot */}
-            <TechHubBrandRow
+            <DhyanEnterpriseBrandRow
               activeBrand={activeBrand}
               onSelectBrand={(brand) => {
                 setActiveBrand(brand);
@@ -201,7 +201,7 @@ export default function TechHubMainView() {
 
             {/* 4. Featured Deals (The 4 exact cards from screenshot) */}
             {activeBrand === 'All' && activeCategory === 'all' && !searchQuery && (
-              <TechHubFeaturedDeals
+              <DhyanEnterpriseFeaturedDeals
                 products={featuredDealProducts}
                 onOpenProductDetail={(prod) => setSelectedModalProduct(prod)}
               />
@@ -242,7 +242,7 @@ export default function TechHubMainView() {
               </div>
 
               {/* Product Deals Grid */}
-              <TechHubFeaturedDeals
+              <DhyanEnterpriseFeaturedDeals
                 products={filteredProducts}
                 onOpenProductDetail={(prod) => setSelectedModalProduct(prod)}
               />
@@ -330,18 +330,18 @@ export default function TechHubMainView() {
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Direct Support</h4>
             <p className="text-slate-400">Desk #02, Flagship Station Road Hub</p>
-            <p className="text-slate-400 mt-1">support@techhub.me • Mon - Sat 9AM - 8PM</p>
+            <p className="text-slate-400 mt-1">support@dhyanenterprise.com • Mon - Sat 9AM - 8PM</p>
             <div className="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-500">
-              © 2026 TechHub & Dhyan Enterprise. All rights reserved.
+              © 2026 Dhyan Enterprise. All rights reserved.
             </div>
           </div>
         </div>
       </footer>
 
       {/* Modals & Overlays */}
-      <TechHubAuthModal />
-      <TechHubAdminAddProductModal />
-      <TechHubProductDetailModal
+      <DhyanEnterpriseAuthModal />
+      <DhyanEnterpriseAdminAddProductModal />
+      <DhyanEnterpriseProductDetailModal
         product={selectedModalProduct}
         onClose={() => setSelectedModalProduct(null)}
       />

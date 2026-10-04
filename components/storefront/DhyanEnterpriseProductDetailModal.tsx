@@ -20,15 +20,15 @@ import {
   Info
 } from 'lucide-react';
 
-interface TechHubProductDetailModalProps {
+interface DhyanEnterpriseProductDetailModalProps {
   product: Product | null;
   onClose: () => void;
 }
 
-export default function TechHubProductDetailModal({
+export default function DhyanEnterpriseProductDetailModal({
   product,
   onClose
-}: TechHubProductDetailModalProps) {
+}: DhyanEnterpriseProductDetailModalProps) {
   const { currentUser, currency, addToCart } = useStore();
 
   const [selectedVariant, setSelectedVariant] = useState<string>('');

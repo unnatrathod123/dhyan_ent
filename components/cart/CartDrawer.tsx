@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useStore } from '@/lib/store/StoreContext';
 import { formatCurrency } from '@/lib/utils/formatters';
-import { X, Plus, Minus, Trash2, MapPin, Truck, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, Plus, Minus, Trash2, MapPin, Truck, ShoppingBag, ArrowRight, Lock, UserCheck, ShieldAlert } from 'lucide-react';
 import OrderConfirmationModal from '../orders/OrderConfirmationModal';
 import { Order } from '@/lib/types';
 
@@ -20,6 +20,9 @@ export default function CartDrawer() {
     currency,
     createOrder,
     giveKhataCredit,
+    setIsAuthModalOpen,
+    setAuthModalTab,
+    setAuthPromptReason,
     showToast
   } = useStore();
 
@@ -62,6 +65,14 @@ export default function CartDrawer() {
   const grandTotal = subtotal + deliveryFee;
 
   const handleCheckout = () => {
+    if (!currentUser) {
+      setAuthPromptReason('checkout');
+      setAuthModalTab('register');
+      setIsAuthModalOpen(true);
+      showToast('Please sign in or create an account (Personal or Wholesale) to complete checkout.', 'warning');
+      return;
+    }
+
     const order = createOrder(deliveryMode);
     if (order) {
       if (paymentMethod === 'khata' && isB2BApproved) {
@@ -288,17 +299,56 @@ export default function CartDrawer() {
 
           {/* Sticky Checkout Trigger */}
           {cart.length > 0 && (
-            <div className="p-4 bg-white border-t border-[#E2E8F0] shrink-0">
+            <div className="p-4 bg-white border-t border-[#E2E8F0] shrink-0 space-y-2.5">
+              {!currentUser ? (
+                <div className="p-3 bg-amber-50/90 border border-amber-200/90 rounded-2xl flex items-start gap-2.5 shadow-xs">
+                  <div className="w-7 h-7 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5">
+                    <Lock size={15} />
+                  </div>
+                  <div className="flex-1 text-xs">
+                    <div className="font-bold text-amber-900 flex items-center gap-1.5">
+                      <span>Login or Register Required to Checkout</span>
+                    </div>
+                    <p className="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
+                      You can add products freely. To finalize order fulfillment and delivery tracking, sign in or register (Personal B2C or Wholesale B2B).
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-2.5 bg-emerald-50/80 border border-emerald-200/80 rounded-xl flex items-center justify-between text-xs text-emerald-900">
+                  <div className="flex items-center gap-2">
+                    <UserCheck size={16} className="text-emerald-600" />
+                    <span className="font-semibold truncate">Signed in as <strong>{currentUser.fullName}</strong></span>
+                  </div>
+                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase">
+                    {currentUser.role === 'admin' ? 'Admin' : currentUser.role === 'b2b' ? 'B2B Dealer' : 'B2C Shopper'}
+                  </span>
+                </div>
+              )}
+
               <button
                 onClick={handleCheckout}
-                className="w-full h-[52px] rounded-xl bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 active:scale-[0.99] transition"
+                className={`w-full h-[52px] rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 active:scale-[0.99] transition ${
+                  !currentUser
+                    ? 'bg-[#0F172A] hover:bg-slate-800 text-white shadow-slate-900/10'
+                    : 'bg-[#2563eb] hover:bg-blue-700 text-white shadow-blue-500/15'
+                }`}
               >
-                <span>
-                  {paymentMethod === 'khata'
-                    ? `Confirm & Charge to Khata (${formatCurrency(grandTotal, currency)})`
-                    : `Proceed to Checkout (${formatCurrency(grandTotal, currency)})`}
-                </span>
-                <ArrowRight size={18} />
+                {!currentUser ? (
+                  <>
+                    <Lock size={16} />
+                    <span>Sign In or Register to Checkout ({formatCurrency(grandTotal, currency)})</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      {paymentMethod === 'khata'
+                        ? `Confirm & Charge to Khata (${formatCurrency(grandTotal, currency)})`
+                        : `Proceed to Checkout (${formatCurrency(grandTotal, currency)})`}
+                    </span>
+                    <ArrowRight size={18} />
+                  </>
+                )}
               </button>
             </div>
           )}

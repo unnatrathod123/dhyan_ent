@@ -17,7 +17,8 @@ import {
   ArrowRight,
   Sparkles,
   Clock,
-  Info
+  Info,
+  ShoppingBag
 } from 'lucide-react';
 
 export default function TechHubAuthModal() {
@@ -26,6 +27,8 @@ export default function TechHubAuthModal() {
     setIsAuthModalOpen,
     authModalTab,
     setAuthModalTab,
+    authPromptReason,
+    cart,
     pendingCartItem,
     products,
     registerUser,
@@ -81,7 +84,7 @@ export default function TechHubAuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
       <div
         className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
@@ -107,15 +110,27 @@ export default function TechHubAuthModal() {
           </button>
         </div>
 
-        {/* Pending Product Notice if triggered by Add to Cart */}
-        {pendingProduct && (
+        {/* Checkout Requirement Notice */}
+        {authPromptReason === 'checkout' && cart.length > 0 ? (
+          <div className="bg-blue-50/95 border-b border-blue-200 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 text-xs text-blue-950">
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#2563eb] shrink-0">
+              <ShoppingBag size={16} />
+            </div>
+            <div className="flex-1">
+              <span className="font-bold">Checkout Authentication Required:</span>
+              <p className="text-[11px] text-blue-800 mt-0.5">
+                Please create an account or sign in to complete checkout for the <strong>{cart.length} item{cart.length > 1 ? 's' : ''}</strong> in your bag.
+              </p>
+            </div>
+          </div>
+        ) : pendingProduct ? (
           <div className="bg-blue-50/90 border-b border-blue-100 px-4 sm:px-6 py-2 sm:py-2.5 flex items-center gap-2.5 sm:gap-3 text-xs text-blue-900">
             <Sparkles size={16} className="text-[#2563eb] shrink-0" />
             <div className="flex-1">
               <span>Adding <strong>{pendingProduct.title}</strong> to your cart. Please create an account or sign in to complete.</span>
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Tab Switcher: Register vs Login */}
         <div className="flex border-b border-slate-100 bg-slate-50/30">

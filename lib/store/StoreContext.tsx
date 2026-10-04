@@ -69,12 +69,13 @@ interface StoreContextType {
   currency: Currency;
   isAuthModalOpen: boolean;
   authModalTab: 'login' | 'register';
-
+  authPromptReason: 'checkout' | 'admin' | 'general' | null;
 
   // Setters & Actions
   setCurrency: (c: Currency) => void;
   setIsAuthModalOpen: (open: boolean) => void;
   setAuthModalTab: (tab: 'login' | 'register') => void;
+  setAuthPromptReason: (reason: 'checkout' | 'admin' | 'general' | null) => void;
   registerUser: (userData: {
     fullName: string;
     email: string;
@@ -193,6 +194,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [currency, setCurrency] = useState<Currency>('USD');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('register');
+  const [authPromptReason, setAuthPromptReason] = useState<'checkout' | 'admin' | 'general' | null>(null);
 
   // Load from LocalStorage on mount
   useEffect(() => {
@@ -299,6 +301,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCurrentUser(newUser);
     setCurrentRole(userData.role);
     setIsAuthModalOpen(false);
+    setAuthPromptReason(null);
 
     if (isB2B) {
       showToast('Registration submitted! B2B Wholesale account is under Admin Review.', 'warning');
@@ -306,9 +309,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       showToast(`Welcome ${userData.fullName}! Your personal account is ready.`, 'success');
     }
 
+    if (cart.length > 0) {
+      setIsCartOpen(true);
+      showToast(`Welcome, ${userData.fullName}! Your cart is ready for checkout.`, 'success');
+    }
+
     if (pendingCartItem) {
       setCart((prev) => [...prev, { ...pendingCartItem }]);
-      showToast('Saved product automatically added to your cart!', 'success');
       setPendingCartItem(null);
       setIsCartOpen(true);
     }
@@ -333,11 +340,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCurrentUser(loggedUser);
     setCurrentRole(asRole as any);
     setIsAuthModalOpen(false);
+    setAuthPromptReason(null);
     showToast(`Welcome back, ${loggedUser.fullName}!`, 'success');
+
+    if (cart.length > 0) {
+      setIsCartOpen(true);
+      showToast(`Welcome back, ${loggedUser.fullName}! Your cart is ready for checkout.`, 'success');
+    }
 
     if (pendingCartItem) {
       setCart((prev) => [...prev, { ...pendingCartItem }]);
-      showToast('Saved product automatically added to your cart!', 'success');
       setPendingCartItem(null);
       setIsCartOpen(true);
     }
@@ -385,16 +397,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setViewportMode(mode);
   };
 
-  // Cart Operation: Gatekept by Authentication as requested!
+  // Cart Operation: Anyone can add products freely; authentication is required at checkout!
   const addToCart = (productId: string, variant: string, color: string, qty: number = 1) => {
-    if (!currentUser) {
-      setPendingCartItem({ productId, variant, color, qty });
-      setAuthModalTab('register');
-      setIsAuthModalOpen(true);
-      showToast('Please sign in or create an account (Personal or Wholesale) to add products to your cart.', 'warning');
-      return;
-    }
-
     setCart((prev) => {
       const existingIndex = prev.findIndex(
         (item) => item.productId === productId && item.variant === variant && item.color === color
@@ -407,7 +411,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return [...prev, { productId, variant, color, qty }];
     });
 
-    if (currentUser.role === 'b2b') {
+    if (currentUser?.role === 'b2b') {
       if (currentUser.b2bStatus === 'approved') {
         showToast(`Added ${qty} items with wholesale dealer pricing!`, 'success');
       } else {
@@ -646,10 +650,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const createOrder = (deliveryMode: 'pickup' | 'delivery', hub: string = 'Station Road Flagship Desk #02'): Order | null => {
     if (cart.length === 0) return null;
 
+    if (!currentUser) {
+      setAuthPromptReason('checkout');
+      setAuthModalTab('register');
+      setIsAuthModalOpen(true);
+      showToast('Please sign in or register to complete your order checkout.', 'warning');
+      return null;
+    }
+
     let subtotal = 0;
     const items = cart.map((item) => {
       const product = products.find((p) => p.id === item.productId);
-      const isB2B = currentRole === 'b2b';
+      const isB2B = currentUser.role === 'b2b' && currentUser.b2bStatus === 'approved';
       const price = product ? (isB2B ? product.wholesalePrice : product.retailPrice) : 0;
       subtotal += price * item.qty;
       return {
@@ -680,8 +692,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const newOrder: Order = {
       orderId,
       date,
-      customerName: 'Jatin Dave',
-      customerPhone: '+91 98765 43210',
+      customerName: currentUser.fullName,
+      customerPhone: currentUser.phone,
       items,
       deliveryMode,
       pickupHub: hub,
@@ -784,9 +796,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         currency,
         isAuthModalOpen,
         authModalTab,
+        authPromptReason,
         setCurrency,
         setIsAuthModalOpen,
         setAuthModalTab,
+        setAuthPromptReason,
         registerUser,
         loginUser,
         toggleB2BApproval,

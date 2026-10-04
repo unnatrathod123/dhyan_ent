@@ -255,12 +255,12 @@ export default function TechHubMainView() {
       <footer className="bg-slate-900 text-slate-400 text-xs py-10 sm:py-12 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <div className="relative h-9 w-36 mb-3 brightness-0 invert opacity-90">
+            <div className="relative h-9 w-40 mb-3">
               <Image
-                src="/Dhyan_Logo.png"
+                src="/Dhyan_Logo_white.png"
                 alt="Dhyan Enterprise"
                 fill
-                sizes="144px"
+                sizes="160px"
                 className="object-contain object-left"
               />
             </div>
